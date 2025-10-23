@@ -1,10 +1,33 @@
 {
-  "name": "better-pay",
-  "version": "1.0.0-beta.1",
+  "name": "better-payment",
+  "version": "1.0.0-beta.2",
   "description": "Unified payment gateway library for Turkish payment providers",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./adapters/next-js": {
+      "types": "./dist/adapters/next-js.d.ts",
+      "import": "./dist/adapters/next-js.mjs",
+      "require": "./dist/adapters/next-js.js"
+    },
+    "./adapters/node": {
+      "types": "./dist/adapters/node.d.ts",
+      "import": "./dist/adapters/node.mjs",
+      "require": "./dist/adapters/node.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.mjs",
+      "require": "./dist/client/index.js"
+    }
+  },
+  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -21,13 +44,31 @@
     "payment",
     "gateway",
     "iyzico",
+    "paytr",
     "turkey",
     "turkish",
     "payment-gateway",
-    "typescript"
+    "typescript",
+    "payment-provider",
+    "e-commerce",
+    "online-payment",
+    "3d-secure",
+    "nodejs",
+    "nextjs"
   ],
-  "author": "",
+  "author": "Better Pay Contributors",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/furkanczay/better-pay.git"
+  },
+  "bugs": {
+    "url": "https://github.com/furkanczay/better-pay/issues"
+  },
+  "homepage": "https://github.com/furkanczay/better-pay#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
@@ -50,6 +91,7 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ]
 }

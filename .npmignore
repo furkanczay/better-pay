@@ -1,0 +1,54 @@
+# Source files
+src/
+examples/
+
+# Development files
+*.test.ts
+*.spec.ts
+__tests__/
+__mocks__/
+.vscode/
+.idea/
+
+# Configuration files
+tsconfig.json
+tsup.config.ts
+.eslintrc*
+.prettierrc*
+vitest.config.ts
+commitlint.config.*
+
+# Git files
+.git/
+.gitignore
+.github/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+*.tsbuildinfo
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Documentation (keep only essential)
+CONTRIBUTING.md
+
+# Misc
+.husky/
+.changeset/

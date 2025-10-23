@@ -37,7 +37,7 @@ pnpm add better-pay
 ### 🎯 Önerilen Yöntem: Config-Based
 
 ```typescript
-import { BetterPay, ProviderType } from 'better-pay';
+import { BetterPay, ProviderType, Currency, BasketItemType } from 'better-pay';
 
 // 1. Config dosyası oluşturun
 const paymentConfig = {
@@ -67,8 +67,10 @@ const paymentConfig = {
 // 2. BetterPay'i başlatın
 const betterPay = new BetterPay(paymentConfig);
 
-// 3. Ödeme yapın
-const result = await betterPay.createPayment({
+// 3. Ödeme yapın - Farklı Kullanım Şekilleri:
+
+// Yöntem 1: Provider'a doğrudan erişim (Önerilen)
+const result = await betterPay.iyzico.createPayment({
   price: '100.00',
   paidPrice: '100.00',
   currency: Currency.TRY,
@@ -120,8 +122,14 @@ if (result.status === 'success') {
   console.error('Ödeme hatası:', result.errorMessage);
 }
 
-// 4. İsteğe bağlı: Belirli bir provider kullanın
-await betterPay.use(ProviderType.PAYTR).createPayment({ ... });
+// Yöntem 2: Default provider kullanarak (defaultProvider ayarlanmışsa)
+const result2 = await betterPay.createPayment({ ... });
+
+// Yöntem 3: use() metodu ile provider seçerek
+const result3 = await betterPay.use(ProviderType.PAYTR).createPayment({ ... });
+
+// Yöntem 4: PayTR'a doğrudan erişim
+const result4 = await betterPay.paytr.createPayment({ ... });
 ```
 
 ### 📦 Alternatif: Direct Provider Kullanımı
@@ -138,19 +146,23 @@ const iyzico = new Iyzico({
 const result = await iyzico.createPayment({ ... });
 ```
 
-**Not:** Config-based yaklaşım önerilir çünkü:
+**Not:** Config-based (BetterPay) yaklaşımın avantajları:
 - ✅ Birden fazla provider'ı tek yerden yönetebilirsiniz
-- ✅ Provider'lar arası kolayca geçiş yapabilirsiniz
+- ✅ Provider'lar arası kolayca geçiş yapabilirsiniz (`betterPay.iyzico` / `betterPay.paytr`)
 - ✅ Ortam değişkenlerine göre provider değiştirebilirsiniz
+- ✅ Default provider ile basit kullanım: `betterPay.createPayment()`
 - ✅ Daha temiz ve maintainable kod
 
 ### 3D Secure Ödeme
 
 ```typescript
 // 3D Secure işlemini başlat
-const threeDSResult = await iyzico.initThreeDSPayment({
+const threeDSResult = await betterPay.iyzico.initThreeDSPayment({
   // Aynı parametreler + callbackUrl
   callbackUrl: 'https://your-site.com/payment/callback',
+  price: '100.00',
+  paidPrice: '100.00',
+  currency: Currency.TRY,
   // ... diğer parametreler
 });
 
@@ -161,17 +173,17 @@ if (threeDSResult.status === 'success' && threeDSResult.threeDSHtmlContent) {
 }
 
 // Callback'ten sonra ödemeyi tamamla
-const finalResult = await iyzico.completeThreeDSPayment(callbackData);
+const finalResult = await betterPay.iyzico.completeThreeDSPayment(callbackData);
 ```
 
 ### Diğer İşlemler
 
 ```typescript
 // Ödeme sorgulama
-const payment = await iyzico.getPayment('payment-id');
+const payment = await betterPay.iyzico.getPayment('payment-id');
 
 // İade
-const refund = await iyzico.refund({
+const refund = await betterPay.iyzico.refund({
   paymentId: 'payment-id',
   price: '50.00',
   currency: Currency.TRY,
@@ -179,10 +191,15 @@ const refund = await iyzico.refund({
 });
 
 // İptal
-const cancel = await iyzico.cancel({
+const cancel = await betterPay.iyzico.cancel({
   paymentId: 'payment-id',
   ip: '85.34.78.112',
 });
+
+// Default provider kullanarak (defaultProvider ayarlanmışsa)
+const payment2 = await betterPay.getPayment('payment-id');
+const refund2 = await betterPay.refund({ ... });
+const cancel2 = await betterPay.cancel({ ... });
 ```
 
 ## TypeScript Desteği
@@ -190,7 +207,7 @@ const cancel = await iyzico.cancel({
 Better Pay, tam TypeScript desteği sunar:
 
 ```typescript
-import type { PaymentRequest, PaymentResponse, PaymentStatus } from 'better-pay';
+import type { PaymentRequest, PaymentResponse } from 'better-pay';
 
 const request: PaymentRequest = {
   // TypeScript otomatik olarak tüm gerekli alanları gösterir
@@ -200,7 +217,7 @@ const request: PaymentRequest = {
 
 const result: PaymentResponse = await provider.createPayment(request);
 
-if (result.status === PaymentStatus.SUCCESS) {
+if (result.status === 'success') {
   // TypeScript bilir ki result.paymentId var
   console.log(result.paymentId);
 }
@@ -212,18 +229,32 @@ if (result.status === PaymentStatus.SUCCESS) {
 
 ```typescript
 // app/api/payment/route.ts
-import { Iyzico } from 'better-pay';
+import { BetterPay, ProviderType } from 'better-pay';
 import { NextRequest, NextResponse } from 'next/server';
 
-const iyzico = new Iyzico({
-  apiKey: process.env.IYZICO_API_KEY!,
-  secretKey: process.env.IYZICO_SECRET_KEY!,
-  baseUrl: process.env.IYZICO_BASE_URL!,
+const betterPay = new BetterPay({
+  providers: {
+    iyzico: {
+      enabled: true,
+      config: {
+        apiKey: process.env.IYZICO_API_KEY!,
+        secretKey: process.env.IYZICO_SECRET_KEY!,
+        baseUrl: process.env.IYZICO_BASE_URL!,
+      },
+    },
+  },
+  defaultProvider: ProviderType.IYZICO,
 });
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const result = await iyzico.createPayment(body);
+
+  // Yöntem 1: Provider'a doğrudan erişim
+  const result = await betterPay.iyzico.createPayment(body);
+
+  // Yöntem 2: Default provider kullanarak
+  // const result = await betterPay.createPayment(body);
+
   return NextResponse.json(result);
 }
 ```
@@ -232,13 +263,27 @@ export async function POST(request: NextRequest) {
 
 ```typescript
 import express from 'express';
-import { Iyzico } from 'better-pay';
+import { BetterPay, ProviderType } from 'better-pay';
 
 const app = express();
-const iyzico = new Iyzico({ /* config */ });
+
+const betterPay = new BetterPay({
+  providers: {
+    iyzico: {
+      enabled: true,
+      config: {
+        apiKey: process.env.IYZICO_API_KEY!,
+        secretKey: process.env.IYZICO_SECRET_KEY!,
+        baseUrl: process.env.IYZICO_BASE_URL!,
+      },
+    },
+  },
+  defaultProvider: ProviderType.IYZICO,
+});
 
 app.post('/payment', async (req, res) => {
-  const result = await iyzico.createPayment(req.body);
+  // Provider'a doğrudan erişim
+  const result = await betterPay.iyzico.createPayment(req.body);
   res.json(result);
 });
 ```

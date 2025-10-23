@@ -10,3 +10,5 @@ dist/
 *.swo
 coverage/
 .nyc_output/
+PUBLISHING.md
+RELEASE.md
