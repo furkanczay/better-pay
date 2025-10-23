@@ -415,7 +415,10 @@ export class Iyzico extends PaymentProvider {
   /**
    * Checkout Form sonucunu sorgula
    */
-  async retrieveCheckoutForm(token: string, conversationId?: string): Promise<CheckoutFormRetrieveResponse> {
+  async retrieveCheckoutForm(
+    token: string,
+    conversationId?: string
+  ): Promise<CheckoutFormRetrieveResponse> {
     try {
       const response = await this.sendRequest<IyzicoCheckoutFormRetrieveResponse>(
         '/payment/iyzipos/checkoutform/auth/ecom/detail',
