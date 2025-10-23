@@ -1,8 +1,9 @@
-name: Publish to NPM
+name: Publish to NPM (Manual)
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
