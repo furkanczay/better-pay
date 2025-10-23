@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/furkanczay/better-payment/compare/better-payment-v1.2.0...better-payment-v1.2.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* **iyzico:** Checkout form test functions ([8392fa6](https://github.com/furkanczay/better-payment/commit/8392fa68ee280126557513650e8b7ee2bfa8bb8d))
+
 ## [1.2.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.1.1...better-payment-v1.2.0) (2025-10-23)
 
 
