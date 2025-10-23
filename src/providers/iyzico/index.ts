@@ -148,6 +148,7 @@ export class Iyzico extends PaymentProvider {
       currency: request.currency,
       basketId: request.basketId,
       paymentGroup: 'PRODUCT',
+      paymentChannel: 'WEB',
       callbackUrl: request.callbackUrl,
       enabledInstallments: request.enabledInstallments,
       buyer: {
@@ -387,7 +388,7 @@ export class Iyzico extends PaymentProvider {
       const iyzicoRequest = this.mapToIyzicoCheckoutFormRequest(request);
 
       const response = await this.sendRequest<IyzicoCheckoutFormInitResponse>(
-        '/payment/checkoutform/initialize',
+        '/payment/iyzipos/checkoutform/initialize/auth/ecom',
         iyzicoRequest
       );
 
@@ -414,12 +415,13 @@ export class Iyzico extends PaymentProvider {
   /**
    * Checkout Form sonucunu sorgula
    */
-  async retrieveCheckoutForm(token: string): Promise<CheckoutFormRetrieveResponse> {
+  async retrieveCheckoutForm(token: string, conversationId?: string): Promise<CheckoutFormRetrieveResponse> {
     try {
       const response = await this.sendRequest<IyzicoCheckoutFormRetrieveResponse>(
-        '/payment/checkoutform/retrieve',
+        '/payment/iyzipos/checkoutform/auth/ecom/detail',
         {
           locale: this.config.locale || 'tr',
+          conversationId: conversationId,
           token: token,
         }
       );

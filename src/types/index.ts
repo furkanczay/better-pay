@@ -44,7 +44,7 @@ export interface Buyer {
   country: string;
   zipCode?: string;
   ip: string;
-  gsmNumber?: string;
+  gsmNumber: string;
 }
 
 /**

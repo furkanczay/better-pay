@@ -69,7 +69,7 @@ export interface IyzicoBuyer {
   id: string;
   name: string;
   surname: string;
-  gsmNumber?: string;
+  gsmNumber: string;
   email: string;
   identityNumber: string;
   lastLoginDate?: string;
@@ -129,6 +129,7 @@ export interface IyzicoCheckoutFormRequest {
   paymentGroup: string;
   callbackUrl: string;
   enabledInstallments?: number[];
+  paymentChannel?: string;
   buyer: IyzicoBuyer;
   shippingAddress: IyzicoAddress;
   billingAddress: IyzicoAddress;
