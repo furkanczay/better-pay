@@ -279,11 +279,12 @@ export class BetterPay {
    * @example
    * ```typescript
    * const result = await betterPay.iyzico.createPayment({ ... });
+   * const checkout = await betterPay.iyzico.initCheckoutForm({ ... });
    * ```
    *
    * @throws Error if Iyzico provider is not enabled or configured
    */
-  get iyzico(): PaymentProvider {
+  get iyzico(): Iyzico {
     const provider = this.providers[ProviderType.IYZICO];
     if (!provider) {
       const enabledProviders = this.getEnabledProviders();
@@ -305,7 +306,7 @@ export class BetterPay {
           `}`
       );
     }
-    return provider;
+    return provider as Iyzico;
   }
 
   /**
@@ -318,7 +319,7 @@ export class BetterPay {
    *
    * @throws Error if PayTR provider is not enabled or configured
    */
-  get paytr(): PaymentProvider {
+  get paytr(): PayTR {
     const provider = this.providers[ProviderType.PAYTR];
     if (!provider) {
       const enabledProviders = this.getEnabledProviders();
@@ -341,6 +342,6 @@ export class BetterPay {
           `}`
       );
     }
-    return provider;
+    return provider as PayTR;
   }
 }
