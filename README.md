@@ -321,13 +321,13 @@ MIT
 ## Destek
 
 - 📖 [Dokümantasyon]
-- 🐛 [Issues](https://github.com/your-repo/better-pay/issues)
-- 💬 [Discussions](https://github.com/your-repo/better-pay/discussions)
+- 🐛 [Issues](https://github.com/furkanczay/better-pay/issues)
+- 💬 [Discussions](https://github.com/furkanczay/better-pay/discussions)
 
 ## Roadmap
 
 - [x] İyzico entegrasyonu
-- [ ] PayTR entegrasyonu
+- [x] PayTR entegrasyonu
 - [ ] Shopier entegrasyonu
 - [ ] PayU entegrasyonu
 - [ ] Stripe Turkey entegrasyonu
