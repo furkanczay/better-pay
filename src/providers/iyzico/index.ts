@@ -321,8 +321,8 @@ export class Iyzico extends PaymentProvider {
     }
   }
 
-  async initCheckoutForm(){
-    try{
+  async initCheckoutForm() {
+    try {
       const response = await this.sendRequest<any>('/payment/checkoutform/initialize', {
         locale: this.config.locale || 'tr',
       });
@@ -346,8 +346,8 @@ export class Iyzico extends PaymentProvider {
     }
   }
 
-  async retrieveCheckoutForm(token: string){
-    try{
+  async retrieveCheckoutForm(token: string) {
+    try {
       const response = await this.sendRequest<any>('/payment/checkoutform/retrieve', {
         locale: this.config.locale || 'tr',
         token: token,
