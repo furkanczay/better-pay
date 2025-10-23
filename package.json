@@ -1,0 +1,55 @@
+{
+  "name": "better-pay",
+  "version": "1.0.0-beta.1",
+  "description": "Unified payment gateway library for Turkish payment providers",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "canary": "tsup examples/iyzico-example.ts --format cjs,esm --dts",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "payment",
+    "gateway",
+    "iyzico",
+    "turkey",
+    "turkish",
+    "payment-gateway",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.19.22",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vitest/coverage-v8": "^4.0.1",
+    "eslint": "^8.54.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "next": "15.5.4",
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.1"
+  },
+  "dependencies": {
+    "axios": "^1.6.2"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
