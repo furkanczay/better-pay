@@ -24,6 +24,8 @@ Türkiye'deki tüm ödeme altyapılarını entegre edebilen unified payment gate
 
 ## Kurulum
 
+**Gereksinimler:** Node.js 20 veya üzeri
+
 ```bash
 npm install better-pay
 # veya
