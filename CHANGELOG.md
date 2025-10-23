@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/furkanczay/better-payment/compare/better-payment-v1.1.0...better-payment-v1.1.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* add contents write permission for npm badge update ([df202cb](https://github.com/furkanczay/better-payment/commit/df202cb69b21e8382c33d9d61971d44a6dd9b145))
+
 ## [1.1.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.0.2...better-payment-v1.1.0) (2025-10-23)
 
 
