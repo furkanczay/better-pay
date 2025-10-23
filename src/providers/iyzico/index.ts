@@ -320,4 +320,53 @@ export class Iyzico extends PaymentProvider {
       };
     }
   }
+
+  async initCheckoutForm(){
+    try{
+      const response = await this.sendRequest<any>('/payment/checkoutform/initialize', {
+        locale: this.config.locale || 'tr',
+      });
+
+      return {
+        status: this.mapStatus(response.status),
+        checkoutFormContent: response.checkoutFormContent,
+        paymentPageUrl: response.paymentPageUrl,
+        token: response.token,
+        conversationId: response.conversationId,
+        errorCode: response.errorCode,
+        errorMessage: response.errorMessage,
+        rawResponse: response,
+      };
+    } catch (error: any) {
+      return {
+        status: PaymentStatus.FAILURE,
+        errorMessage: error.message || 'Checkout form initialization failed',
+        rawResponse: error.response?.data,
+      };
+    }
+  }
+
+  async retrieveCheckoutForm(token: string){
+    try{
+      const response = await this.sendRequest<any>('/payment/checkoutform/retrieve', {
+        locale: this.config.locale || 'tr',
+        token: token,
+      });
+
+      return {
+        status: this.mapStatus(response.status),
+        paymentId: response.paymentId,
+        conversationId: response.conversationId,
+        errorCode: response.errorCode,
+        errorMessage: response.errorMessage,
+        rawResponse: response,
+      };
+    } catch (error: any) {
+      return {
+        status: PaymentStatus.FAILURE,
+        errorMessage: error.message || 'Retrieve checkout form failed',
+        rawResponse: error.response?.data,
+      };
+    }
+  }
 }
