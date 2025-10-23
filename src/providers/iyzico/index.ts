@@ -10,6 +10,9 @@ import {
   CancelRequest,
   CancelResponse,
   PaymentStatus,
+  CheckoutFormRequest,
+  CheckoutFormInitResponse,
+  CheckoutFormRetrieveResponse,
 } from '../../types';
 import { createIyzicoHeaders } from './utils';
 import {
@@ -18,6 +21,9 @@ import {
   IyzicoThreeDSInitResponse,
   IyzicoRefundResponse,
   IyzicoCancelResponse,
+  IyzicoCheckoutFormRequest,
+  IyzicoCheckoutFormInitResponse,
+  IyzicoCheckoutFormRetrieveResponse,
 } from './types';
 
 /**
@@ -92,6 +98,58 @@ export class Iyzico extends PaymentProvider {
         cvc: request.paymentCard.cvc,
         registerCard: request.paymentCard.registerCard ? 1 : 0,
       },
+      buyer: {
+        id: request.buyer.id,
+        name: request.buyer.name,
+        surname: request.buyer.surname,
+        gsmNumber: request.buyer.gsmNumber,
+        email: request.buyer.email,
+        identityNumber: request.buyer.identityNumber,
+        registrationAddress: request.buyer.registrationAddress,
+        ip: request.buyer.ip,
+        city: request.buyer.city,
+        country: request.buyer.country,
+        zipCode: request.buyer.zipCode,
+      },
+      shippingAddress: {
+        contactName: request.shippingAddress.contactName,
+        city: request.shippingAddress.city,
+        country: request.shippingAddress.country,
+        address: request.shippingAddress.address,
+        zipCode: request.shippingAddress.zipCode,
+      },
+      billingAddress: {
+        contactName: request.billingAddress.contactName,
+        city: request.billingAddress.city,
+        country: request.billingAddress.country,
+        address: request.billingAddress.address,
+        zipCode: request.billingAddress.zipCode,
+      },
+      basketItems: request.basketItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        category1: item.category1,
+        category2: item.category2,
+        itemType: item.itemType,
+        price: item.price,
+      })),
+    };
+  }
+
+  /**
+   * Checkout Form request'ini İyzico formatına çevir
+   */
+  private mapToIyzicoCheckoutFormRequest(request: CheckoutFormRequest): IyzicoCheckoutFormRequest {
+    return {
+      locale: this.config.locale || 'tr',
+      conversationId: request.conversationId,
+      price: request.price,
+      paidPrice: request.paidPrice,
+      currency: request.currency,
+      basketId: request.basketId,
+      paymentGroup: 'PRODUCT',
+      callbackUrl: request.callbackUrl,
+      enabledInstallments: request.enabledInstallments,
       buyer: {
         id: request.buyer.id,
         name: request.buyer.name,
@@ -321,17 +379,24 @@ export class Iyzico extends PaymentProvider {
     }
   }
 
-  async initCheckoutForm() {
+  /**
+   * Checkout Form başlat
+   */
+  async initCheckoutForm(request: CheckoutFormRequest): Promise<CheckoutFormInitResponse> {
     try {
-      const response = await this.sendRequest<any>('/payment/checkoutform/initialize', {
-        locale: this.config.locale || 'tr',
-      });
+      const iyzicoRequest = this.mapToIyzicoCheckoutFormRequest(request);
+
+      const response = await this.sendRequest<IyzicoCheckoutFormInitResponse>(
+        '/payment/checkoutform/initialize',
+        iyzicoRequest
+      );
 
       return {
         status: this.mapStatus(response.status),
         checkoutFormContent: response.checkoutFormContent,
         paymentPageUrl: response.paymentPageUrl,
         token: response.token,
+        tokenExpireTime: response.tokenExpireTime,
         conversationId: response.conversationId,
         errorCode: response.errorCode,
         errorMessage: response.errorMessage,
@@ -346,16 +411,41 @@ export class Iyzico extends PaymentProvider {
     }
   }
 
-  async retrieveCheckoutForm(token: string) {
+  /**
+   * Checkout Form sonucunu sorgula
+   */
+  async retrieveCheckoutForm(token: string): Promise<CheckoutFormRetrieveResponse> {
     try {
-      const response = await this.sendRequest<any>('/payment/checkoutform/retrieve', {
-        locale: this.config.locale || 'tr',
-        token: token,
-      });
+      const response = await this.sendRequest<IyzicoCheckoutFormRetrieveResponse>(
+        '/payment/checkoutform/retrieve',
+        {
+          locale: this.config.locale || 'tr',
+          token: token,
+        }
+      );
 
       return {
         status: this.mapStatus(response.status),
         paymentId: response.paymentId,
+        paymentStatus: response.paymentStatus,
+        price: response.price,
+        paidPrice: response.paidPrice,
+        currency: response.currency,
+        basketId: response.basketId,
+        installment: response.installment,
+        binNumber: response.binNumber,
+        lastFourDigits: response.lastFourDigits,
+        cardType: response.cardType,
+        cardAssociation: response.cardAssociation,
+        cardFamily: response.cardFamily,
+        cardToken: response.cardToken,
+        cardUserKey: response.cardUserKey,
+        fraudStatus: response.fraudStatus,
+        merchantCommissionRate: response.merchantCommissionRate,
+        merchantCommissionRateAmount: response.merchantCommissionRateAmount,
+        iyziCommissionRateAmount: response.iyziCommissionRateAmount,
+        iyziCommissionFee: response.iyziCommissionFee,
+        paymentTransactionId: response.paymentTransactionId,
         conversationId: response.conversationId,
         errorCode: response.errorCode,
         errorMessage: response.errorMessage,

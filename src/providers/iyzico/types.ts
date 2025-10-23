@@ -115,3 +115,58 @@ export interface IyzicoPaymentRequest {
   basketItems: IyzicoBasketItem[];
   callbackUrl?: string;
 }
+
+/**
+ * İyzico Checkout Form İstek Tipi
+ */
+export interface IyzicoCheckoutFormRequest {
+  locale: string;
+  conversationId?: string;
+  price: string;
+  paidPrice: string;
+  currency: string;
+  basketId: string;
+  paymentGroup: string;
+  callbackUrl: string;
+  enabledInstallments?: number[];
+  buyer: IyzicoBuyer;
+  shippingAddress: IyzicoAddress;
+  billingAddress: IyzicoAddress;
+  basketItems: IyzicoBasketItem[];
+}
+
+/**
+ * İyzico Checkout Form Initialize Response
+ */
+export interface IyzicoCheckoutFormInitResponse extends IyzicoResponse {
+  checkoutFormContent?: string;
+  paymentPageUrl?: string;
+  token?: string;
+  tokenExpireTime?: number;
+}
+
+/**
+ * İyzico Checkout Form Retrieve Response
+ */
+export interface IyzicoCheckoutFormRetrieveResponse extends IyzicoResponse {
+  paymentId?: string;
+  paymentStatus?: string;
+  fraudStatus?: number;
+  price?: number;
+  paidPrice?: number;
+  currency?: string;
+  basketId?: string;
+  installment?: number;
+  binNumber?: string;
+  lastFourDigits?: string;
+  cardType?: string;
+  cardAssociation?: string;
+  cardFamily?: string;
+  cardToken?: string;
+  cardUserKey?: string;
+  merchantCommissionRate?: number;
+  merchantCommissionRateAmount?: number;
+  iyziCommissionRateAmount?: number;
+  iyziCommissionFee?: number;
+  paymentTransactionId?: string;
+}

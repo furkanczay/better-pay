@@ -32,6 +32,9 @@ export {
   RefundResponse,
   CancelRequest,
   CancelResponse,
+  CheckoutFormRequest,
+  CheckoutFormInitResponse,
+  CheckoutFormRetrieveResponse,
 } from './types';
 
 // Provider exports (for advanced usage - direct provider access)

@@ -178,6 +178,74 @@ if (threeDSResult.status === 'success' && threeDSResult.threeDSHtmlContent) {
 const finalResult = await betterPay.iyzico.completeThreeDSPayment(callbackData);
 ```
 
+### Checkout Form (Ödeme Formu)
+
+İyzico'nun hazır ödeme formunu kullanarak, kart bilgilerini kendi sunucunuzda tutmadan ödeme alabilirsiniz:
+
+```typescript
+import { BetterPay, Currency, BasketItemType } from 'better-payment';
+
+// Checkout Form başlat
+const checkoutResult = await betterPay.iyzico.initCheckoutForm({
+  price: '100.00',
+  paidPrice: '100.00',
+  currency: Currency.TRY,
+  basketId: 'B67832',
+  callbackUrl: 'https://your-site.com/payment/callback',
+  enabledInstallments: [1, 2, 3, 6, 9], // İsteğe bağlı - İzin verilen taksit sayıları
+  buyer: {
+    id: 'BY789',
+    name: 'John',
+    surname: 'Doe',
+    email: 'email@email.com',
+    identityNumber: '11111111110',
+    registrationAddress: 'Address',
+    city: 'Istanbul',
+    country: 'Turkey',
+    ip: '85.34.78.112',
+  },
+  shippingAddress: {
+    contactName: 'John Doe',
+    city: 'Istanbul',
+    country: 'Turkey',
+    address: 'Address',
+  },
+  billingAddress: {
+    contactName: 'John Doe',
+    city: 'Istanbul',
+    country: 'Turkey',
+    address: 'Address',
+  },
+  basketItems: [
+    {
+      id: 'BI101',
+      name: 'Product 1',
+      category1: 'Category',
+      itemType: BasketItemType.PHYSICAL,
+      price: '100.00',
+    },
+  ],
+});
+
+if (checkoutResult.status === 'success') {
+  // Kullanıcıyı İyzico ödeme sayfasına yönlendir
+  // Option 1: paymentPageUrl ile redirect
+  window.location.href = checkoutResult.paymentPageUrl;
+
+  // Option 2: checkoutFormContent (iframe HTML) göster
+  // document.getElementById('payment-form').innerHTML = checkoutResult.checkoutFormContent;
+}
+
+// Callback'te token ile ödeme sonucunu sorgula
+const paymentResult = await betterPay.iyzico.retrieveCheckoutForm(token);
+
+if (paymentResult.status === 'success') {
+  console.log('Ödeme başarılı:', paymentResult.paymentId);
+  console.log('Ödenen tutar:', paymentResult.paidPrice);
+  console.log('Taksit sayısı:', paymentResult.installment);
+}
+```
+
 ### Diğer İşlemler
 
 ```typescript
@@ -305,6 +373,13 @@ Tüm provider'lar aşağıdaki metodları uygular:
 - `cancel(request)` - İptal işlemi
 - `getPayment(paymentId)` - Ödeme sorgulama
 
+### İyzico Özel Metodlar
+
+İyzico provider'ı aşağıdaki ek metodları sunar:
+
+- `initCheckoutForm(request)` - Checkout form başlat (kart bilgileri toplamadan ödeme)
+- `retrieveCheckoutForm(token)` - Checkout form sonucunu sorgula
+
 ### Tipler ve Enum'lar
 
 ```typescript
@@ -350,6 +425,118 @@ Better Pay açık kaynak bir projedir. Katkılarınızı bekliyoruz!
 3. Değişikliklerinizi commit edin (`git commit -m 'feat: Add amazing feature'`)
 4. Branch'i push edin (`git push origin feature/amazing-feature`)
 5. Pull Request açın
+
+### Sürüm Yönetimi ve Release Süreci
+
+Bu proje [Release Please](https://github.com/googleapis/release-please) kullanarak otomatik sürüm yönetimi yapar. Her commit [Conventional Commits](https://www.conventionalcommits.org/) standardına uygun olmalıdır.
+
+#### Commit Mesajı Formatı
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Commit Tipleri:**
+- `feat:` - Yeni özellik (minor sürüm artışı: 1.1.0 → 1.2.0)
+- `fix:` - Bug düzeltmesi (patch sürüm artışı: 1.1.0 → 1.1.1)
+- `docs:` - Dokümantasyon değişikliği
+- `style:` - Kod formatı değişikliği
+- `refactor:` - Kod iyileştirmesi
+- `test:` - Test ekleme/güncelleme
+- `chore:` - Genel bakım işlemleri
+- `BREAKING CHANGE:` - Geriye dönük uyumsuz değişiklik (major sürüm artışı: 1.1.0 → 2.0.0)
+
+**Örnekler:**
+```bash
+git commit -m "feat: Add webhook support for payment notifications"
+git commit -m "fix: Resolve 3DS callback parsing issue"
+git commit -m "feat(iyzico): Add installment calculation method"
+git commit -m "feat!: Change payment API interface" # Breaking change
+```
+
+#### Prerelease (Beta/Alpha) Sürüm Yayınlama
+
+Beta veya alpha gibi prerelease sürümleri yayınlamak için:
+
+**1. Prerelease Branch Oluşturun**
+
+```bash
+# Beta sürüm için
+git checkout -b release-please--branches--main--prerelease-type--beta
+
+# Alpha sürüm için
+git checkout -b release-please--branches--main--prerelease-type--alpha
+
+# RC (Release Candidate) için
+git checkout -b release-please--branches--main--prerelease-type--rc
+```
+
+**2. Değişikliklerinizi Yapın ve Commit Edin**
+
+```bash
+git commit -m "feat: Add new experimental payment method"
+git push origin release-please--branches--main--prerelease-type--beta
+```
+
+**3. Release Please Otomatik PR Oluşturur**
+
+Release Please, branch'i algılayıp otomatik olarak bir prerelease PR oluşturur:
+- Beta branch için: `1.2.0` → `1.2.0-beta.1`
+- Her yeni commit: `1.2.0-beta.1` → `1.2.0-beta.2`
+
+**4. PR'ı Merge Ederek Prerelease Yayınlayın**
+
+PR'ı merge ettiğinizde:
+- Git tag oluşturulur (örn: `v1.2.0-beta.1`)
+- NPM'e beta tag ile yayınlanır
+- Kullanıcılar şu şekilde kurabilir:
+
+```bash
+npm install better-payment@beta
+# veya spesifik versiyon
+npm install better-payment@1.2.0-beta.1
+```
+
+**5. Stable Sürüme Geçiş**
+
+Beta testleri tamamlandıktan sonra:
+
+```bash
+# Beta branch'i main'e merge edin
+git checkout main
+git merge release-please--branches--main--prerelease-type--beta
+git push origin main
+
+# Beta branch'i silin
+git push origin --delete release-please--branches--main--prerelease-type--beta
+```
+
+Release Please bir sonraki main PR'ında beta label'ını kaldırıp stable sürüm (örn: `1.2.0`) oluşturur.
+
+#### NPM Tag'leri
+
+- `latest` - Stable sürümler (varsayılan: `npm install better-payment`)
+- `beta` - Beta sürümler (`npm install better-payment@beta`)
+- `alpha` - Alpha sürümler (`npm install better-payment@alpha`)
+- `rc` - Release candidate sürümler (`npm install better-payment@rc`)
+
+#### Release Workflow
+
+Normal geliştirme akışı:
+```
+main branch → feat/fix commits → Release Please PR → merge → stable release (1.2.0)
+```
+
+Prerelease akışı:
+```
+beta branch → feat commits → Release Please PR → merge → beta release (1.2.0-beta.1)
+              → more commits → auto update PR → merge → beta release (1.2.0-beta.2)
+              → merge to main → Release Please PR → merge → stable release (1.2.0)
+```
 
 ### Yeni Provider Ekleme
 

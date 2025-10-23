@@ -170,3 +170,66 @@ export interface CancelResponse {
   errorMessage?: string;
   rawResponse?: any;
 }
+
+/**
+ * Checkout Form isteği
+ */
+export interface CheckoutFormRequest {
+  price: string;
+  paidPrice: string;
+  currency: Currency | string;
+  basketId: string;
+  callbackUrl: string;
+  enabledInstallments?: number[];
+  buyer: Buyer;
+  shippingAddress: Address;
+  billingAddress: Address;
+  basketItems: BasketItem[];
+  conversationId?: string;
+}
+
+/**
+ * Checkout Form başlatma yanıtı
+ */
+export interface CheckoutFormInitResponse {
+  status: PaymentStatus;
+  checkoutFormContent?: string;
+  paymentPageUrl?: string;
+  token?: string;
+  tokenExpireTime?: number;
+  conversationId?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  rawResponse?: any;
+}
+
+/**
+ * Checkout Form sonuç yanıtı
+ */
+export interface CheckoutFormRetrieveResponse {
+  status: PaymentStatus;
+  paymentId?: string;
+  paymentStatus?: string;
+  price?: number;
+  paidPrice?: number;
+  currency?: string;
+  basketId?: string;
+  installment?: number;
+  binNumber?: string;
+  lastFourDigits?: string;
+  cardType?: string;
+  cardAssociation?: string;
+  cardFamily?: string;
+  cardToken?: string;
+  cardUserKey?: string;
+  fraudStatus?: number;
+  merchantCommissionRate?: number;
+  merchantCommissionRateAmount?: number;
+  iyziCommissionRateAmount?: number;
+  iyziCommissionFee?: number;
+  paymentTransactionId?: string;
+  conversationId?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  rawResponse?: any;
+}

@@ -54,5 +54,17 @@ describe('Iyzico Provider', () => {
     expect(typeof iyzico.refund).toBe('function');
     expect(typeof iyzico.cancel).toBe('function');
     expect(typeof iyzico.getPayment).toBe('function');
+    expect(typeof iyzico.initCheckoutForm).toBe('function');
+    expect(typeof iyzico.retrieveCheckoutForm).toBe('function');
+  });
+
+  describe('Checkout Form Methods', () => {
+    it('should have initCheckoutForm method', () => {
+      expect(typeof iyzico.initCheckoutForm).toBe('function');
+    });
+
+    it('should have retrieveCheckoutForm method', () => {
+      expect(typeof iyzico.retrieveCheckoutForm).toBe('function');
+    });
   });
 });
