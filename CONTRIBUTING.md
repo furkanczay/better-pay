@@ -34,7 +34,7 @@ Bug bulduğunuzda lütfen bir issue açın ve aşağıdaki bilgileri ekleyin:
 
 Yeni özellik önerileri için:
 
-1. Önce [Discussions](https://github.com/furkanczay/better-pay/discussions) bölümünde önerinizi paylaşın
+1. Önce [Discussions](https://github.com/furkanczay/better-payment/discussions) bölümünde önerinizi paylaşın
 2. Topluluktan geri bildirim alın
 3. Onaylandıktan sonra bir issue açın
 
@@ -60,13 +60,13 @@ Dokümantasyon iyileştirmeleri her zaman değerlidir:
 
 2. Fork'unuzu klonlayın:
 ```bash
-git clone https://github.com/KULLANICI_ADINIZ/better-pay.git
-cd better-pay
+git clone https://github.com/KULLANICI_ADINIZ/better-payment.git
+cd better-payment
 ```
 
 3. Upstream remote'u ekleyin:
 ```bash
-git remote add upstream https://github.com/furkanczay/better-pay.git
+git remote add upstream https://github.com/furkanczay/better-payment.git
 ```
 
 4. Bağımlılıkları yükleyin:
@@ -435,8 +435,8 @@ Minimum %80 test coverage hedefleyin:
 ## Sorular ve Destek
 
 - 📖 [Dokümantasyon](README.md)
-- 🐛 [Issues](https://github.com/furkanczay/better-pay/issues)
-- 💬 [Discussions](https://github.com/furkanczay/better-pay/discussions)
+- 🐛 [Issues](https://github.com/furkanczay/better-payment/issues)
+- 💬 [Discussions](https://github.com/furkanczay/better-payment/discussions)
 
 ## Lisans
 

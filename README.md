@@ -1,6 +1,6 @@
 # Better Pay
 
-[![npm version](https://badge.fury.io/js/better-pay.svg)](https://badge.fury.io/js/better-pay)
+[![npm version](https://badge.fury.io/js/better-payment.svg)](https://badge.fury.io/js/better-payment)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Türkiye'deki tüm ödeme altyapılarını entegre edebilen unified payment gateway kütüphanesi.
@@ -27,11 +27,11 @@ Türkiye'deki tüm ödeme altyapılarını entegre edebilen unified payment gate
 **Gereksinimler:** Node.js 20 veya üzeri
 
 ```bash
-npm install better-pay
+npm install better-payment
 # veya
-yarn add better-pay
+yarn add better-payment
 # veya
-pnpm add better-pay
+pnpm add better-payment
 ```
 
 ## Hızlı Başlangıç
@@ -39,7 +39,7 @@ pnpm add better-pay
 ### 🎯 Önerilen Yöntem: Config-Based
 
 ```typescript
-import { BetterPay, ProviderType, Currency, BasketItemType } from 'better-pay';
+import { BetterPay, ProviderType, Currency, BasketItemType } from 'better-payment';
 
 // 1. Config dosyası oluşturun
 const paymentConfig = {
@@ -137,7 +137,7 @@ const result4 = await betterPay.paytr.createPayment({ ... });
 ### 📦 Alternatif: Direct Provider Kullanımı
 
 ```typescript
-import { Iyzico } from 'better-pay';
+import { Iyzico } from 'better-payment';
 
 const iyzico = new Iyzico({
   apiKey: process.env.IYZICO_API_KEY!,
@@ -209,7 +209,7 @@ const cancel2 = await betterPay.cancel({ ... });
 Better Pay, tam TypeScript desteği sunar:
 
 ```typescript
-import type { PaymentRequest, PaymentResponse } from 'better-pay';
+import type { PaymentRequest, PaymentResponse } from 'better-payment';
 
 const request: PaymentRequest = {
   // TypeScript otomatik olarak tüm gerekli alanları gösterir
@@ -231,7 +231,7 @@ if (result.status === 'success') {
 
 ```typescript
 // app/api/payment/route.ts
-import { BetterPay, ProviderType } from 'better-pay';
+import { BetterPay, ProviderType } from 'better-payment';
 import { NextRequest, NextResponse } from 'next/server';
 
 const betterPay = new BetterPay({
@@ -265,7 +265,7 @@ export async function POST(request: NextRequest) {
 
 ```typescript
 import express from 'express';
-import { BetterPay, ProviderType } from 'better-pay';
+import { BetterPay, ProviderType } from 'better-payment';
 
 const app = express();
 
@@ -368,8 +368,8 @@ MIT
 ## Destek
 
 - 📖 [Dokümantasyon]
-- 🐛 [Issues](https://github.com/furkanczay/better-pay/issues)
-- 💬 [Discussions](https://github.com/furkanczay/better-pay/discussions)
+- 🐛 [Issues](https://github.com/furkanczay/better-payment/issues)
+- 💬 [Discussions](https://github.com/furkanczay/better-payment/discussions)
 
 ## Roadmap
 

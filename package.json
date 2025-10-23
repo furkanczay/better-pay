@@ -60,12 +60,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/furkanczay/better-pay.git"
+    "url": "git+https://github.com/furkanczay/better-payment.git"
   },
   "bugs": {
-    "url": "https://github.com/furkanczay/better-pay/issues"
+    "url": "https://github.com/furkanczay/better-payment/issues"
   },
-  "homepage": "https://github.com/furkanczay/better-pay#readme",
+  "homepage": "https://github.com/furkanczay/better-payment#readme",
   "engines": {
     "node": ">=20.0.0"
   },
