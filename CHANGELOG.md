@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/furkanczay/better-payment/compare/better-payment-v1.2.3...better-payment-v1.2.4) (2025-10-25)
+
+
+### Bug Fixes
+
+* Integration and unit tests ([a34f3bb](https://github.com/furkanczay/better-payment/commit/a34f3bbb1655e7f790e4991e7fbb164fabc704e2))
+
 ## [1.2.3](https://github.com/furkanczay/better-payment/compare/better-payment-v1.2.2...better-payment-v1.2.3) (2025-10-23)
 
 
