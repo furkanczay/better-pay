@@ -696,27 +696,28 @@ MIT
 - 📖 [Dokümantasyon]
 - 🐛 [Issues](https://github.com/furkanczay/better-payment/issues)
 - 💬 [Discussions](https://github.com/furkanczay/better-payment/discussions)
+- [Discord](https://discord.gg/SkundF4FFU)
 
 ## Roadmap
 
 - [x] İyzico
-- - [x] Non3D Ödeme
-- - [x] 3D Secure Ödeme
-- - [x] Checkout Form
-- - [x] Abonelik (Subscription) Desteği
-- - [x] İade ve İptal
-- - [x] Ödeme Sorgulama
-- - [x] TypeScript Desteği
-- - [ ] BIN Check
+  - [x] Non3D Ödeme
+  - [x] 3D Secure Ödeme
+  - [x] Checkout Form
+  - [x] Abonelik (Subscription) Desteği
+  - [x] İade ve İptal
+  - [x] Ödeme Sorgulama
+  - [x] TypeScript Desteği
+  - [ ] BIN Check
 - [x] PayTR entegrasyonu
-- - [x] Non3D Ödeme
-- - [x] 3D Secure Ödeme
-- - [x] TypeScript Desteği
-- - [ ] BIN Check
+  - [x] Non3D Ödeme
+  - [x] 3D Secure Ödeme
+  - [x] TypeScript Desteği
+  - [ ] BIN Check
 - [ ] ParamPOS
-- - [ ] Non3D Ödeme
-- - [ ] 3D Secure Ödeme
-- - [ ] TypeScript Desteği
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] TypeScript Desteği
 
 ---
 
