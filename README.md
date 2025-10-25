@@ -1,4 +1,4 @@
-# Better Pay
+# Better Payment
 
 [![npm version](https://badge.fury.io/js/better-payment.svg)](https://badge.fury.io/js/better-payment)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -11,12 +11,13 @@ Türkiye'deki tüm ödeme altyapılarını entegre edebilen unified payment gate
 - 🔌 **Framework Agnostic** - Node.js, Next.js, Express ve diğer tüm JavaScript framework'leri ile uyumlu
 - 🏦 **Çoklu Provider Desteği** - Birden fazla ödeme sağlayıcısını aynı API ile yönetin
 - 🎯 **Tutarlı API** - Tüm provider'lar için aynı interface
+- 🔄 **Abonelik Desteği** - İyzico ile tekrarlayan ödemeler (subscription)
 - 📦 **Hafif** - Minimal bağımlılık (sadece axios)
 - 🛡️ **Güvenli** - API key ve secret key şifreleme
 
 ## Desteklenen Ödeme Sağlayıcıları
 
-- ✅ **İyzico** - Tam destek (V2 Authorization)
+- ✅ **İyzico** - Tam destek (V2 Authorization, Checkout Form, Subscription)
 - ✅ **PayTR** - Tam destek
 - 🔜 **Shopier** - Planlanan
 - 🔜 **PayU** - Planlanan
@@ -149,6 +150,7 @@ const result = await iyzico.createPayment({ ... });
 ```
 
 **Not:** Config-based (BetterPay) yaklaşımın avantajları:
+
 - ✅ Birden fazla provider'ı tek yerden yönetebilirsiniz
 - ✅ Provider'lar arası kolayca geçiş yapabilirsiniz (`betterPay.iyzico` / `betterPay.paytr`)
 - ✅ Ortam değişkenlerine göre provider değiştirebilirsiniz
@@ -245,6 +247,112 @@ if (paymentResult.status === 'success') {
   console.log('Taksit sayısı:', paymentResult.installment);
 }
 ```
+
+### Abonelik Yönetimi (İyzico Subscription)
+
+İyzico'nun abonelik sistemi ile tekrarlayan ödemeler alabilirsiniz:
+
+```typescript
+import { BetterPay, PaymentInterval, SubscriptionStatus } from 'better-payment';
+
+// 1. Abonelik ürünü oluştur
+const product = await betterPay.iyzico.createSubscriptionProduct({
+  name: 'Premium Üyelik',
+  description: 'Aylık premium üyelik paketi',
+  conversationId: 'product-001',
+});
+
+// 2. Fiyatlandırma planı oluştur
+const plan = await betterPay.iyzico.createPricingPlan({
+  productReferenceCode: product.data.referenceCode,
+  name: 'Aylık Plan',
+  price: 99.9,
+  currency: 'TRY',
+  paymentInterval: PaymentInterval.MONTHLY,
+  paymentIntervalCount: 1,
+  trialPeriodDays: 7, // 7 günlük deneme süresi (opsiyonel)
+  recurrenceCount: 12, // 12 ay sonra otomatik iptal (opsiyonel)
+  conversationId: 'plan-001',
+});
+
+// 3. Aboneliği başlat
+const subscription = await betterPay.iyzico.initializeSubscription({
+  pricingPlanReferenceCode: plan.data.referenceCode,
+  subscriptionInitialStatus: SubscriptionStatus.ACTIVE,
+  customer: {
+    name: 'John',
+    surname: 'Doe',
+    email: 'john.doe@example.com',
+    gsmNumber: '+905350000000',
+    identityNumber: '11111111111',
+    billingAddress: {
+      contactName: 'John Doe',
+      city: 'Istanbul',
+      country: 'Turkey',
+      address: 'Nidakule Göztepe, Merdivenköy Mah.',
+      zipCode: '34732',
+    },
+  },
+  paymentCard: {
+    cardHolderName: 'John Doe',
+    cardNumber: '5528790000000008',
+    expireMonth: '12',
+    expireYear: '2030',
+    cvc: '123',
+  },
+  conversationId: 'subscription-001',
+});
+
+if (subscription.status === 'success') {
+  console.log('Abonelik başlatıldı:', subscription.data.referenceCode);
+  console.log('Durum:', subscription.data.subscriptionStatus);
+}
+
+// 4. Abonelik detaylarını sorgula
+const details = await betterPay.iyzico.retrieveSubscription({
+  subscriptionReferenceCode: subscription.data.referenceCode,
+});
+
+// 5. Aboneliği yükselt (farklı plana geç)
+const upgrade = await betterPay.iyzico.upgradeSubscription({
+  subscriptionReferenceCode: subscription.data.referenceCode,
+  newPricingPlanReferenceCode: 'yeni-plan-ref-code',
+  useTrial: false,
+  resetRecurrenceCount: false,
+});
+
+// 6. Kart güncelleme formu oluştur
+const cardUpdate = await betterPay.iyzico.updateSubscriptionCard({
+  subscriptionReferenceCode: subscription.data.referenceCode,
+  callbackUrl: 'https://your-site.com/subscription/card-update/callback',
+  conversationId: 'card-update-001',
+});
+
+if (cardUpdate.status === 'success') {
+  // Kullanıcıyı kart güncelleme sayfasına yönlendir
+  window.location.href = cardUpdate.paymentPageUrl;
+}
+
+// 7. Aboneliği iptal et
+const cancel = await betterPay.iyzico.cancelSubscription({
+  subscriptionReferenceCode: subscription.data.referenceCode,
+});
+```
+
+**Ödeme Aralıkları (PaymentInterval):**
+
+- `PaymentInterval.DAILY` - Günlük
+- `PaymentInterval.WEEKLY` - Haftalık
+- `PaymentInterval.MONTHLY` - Aylık
+- `PaymentInterval.YEARLY` - Yıllık
+
+**Abonelik Durumları (SubscriptionStatus):**
+
+- `SubscriptionStatus.ACTIVE` - Aktif
+- `SubscriptionStatus.PENDING` - Beklemede
+- `SubscriptionStatus.CANCELED` - İptal Edildi
+- `SubscriptionStatus.EXPIRED` - Süresi Doldu
+- `SubscriptionStatus.UNPAID` - Ödenmedi
 
 ### Diğer İşlemler
 
@@ -377,8 +485,20 @@ Tüm provider'lar aşağıdaki metodları uygular:
 
 İyzico provider'ı aşağıdaki ek metodları sunar:
 
+**Checkout Form:**
+
 - `initCheckoutForm(request)` - Checkout form başlat (kart bilgileri toplamadan ödeme)
 - `retrieveCheckoutForm(token)` - Checkout form sonucunu sorgula
+
+**Abonelik (Subscription):**
+
+- `createSubscriptionProduct(request)` - Abonelik ürünü oluştur
+- `createPricingPlan(request)` - Fiyatlandırma planı oluştur
+- `initializeSubscription(request)` - Abonelik başlat
+- `retrieveSubscription(request)` - Abonelik detaylarını sorgula
+- `upgradeSubscription(request)` - Aboneliği farklı plana yükselt
+- `updateSubscriptionCard(request)` - Abonelik kartını güncelle
+- `cancelSubscription(request)` - Aboneliği iptal et
 
 ### Tipler ve Enum'lar
 
@@ -400,6 +520,21 @@ enum Currency {
 enum BasketItemType {
   PHYSICAL = 'PHYSICAL',
   VIRTUAL = 'VIRTUAL',
+}
+
+enum PaymentInterval {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+}
+
+enum SubscriptionStatus {
+  ACTIVE = 'ACTIVE',
+  PENDING = 'PENDING',
+  CANCELED = 'CANCELED',
+  EXPIRED = 'EXPIRED',
+  UNPAID = 'UNPAID',
 }
 ```
 
@@ -441,6 +576,7 @@ Bu proje [Release Please](https://github.com/googleapis/release-please) kullanar
 ```
 
 **Commit Tipleri:**
+
 - `feat:` - Yeni özellik (minor sürüm artışı: 1.1.0 → 1.2.0)
 - `fix:` - Bug düzeltmesi (patch sürüm artışı: 1.1.0 → 1.1.1)
 - `docs:` - Dokümantasyon değişikliği
@@ -451,6 +587,7 @@ Bu proje [Release Please](https://github.com/googleapis/release-please) kullanar
 - `BREAKING CHANGE:` - Geriye dönük uyumsuz değişiklik (major sürüm artışı: 1.1.0 → 2.0.0)
 
 **Örnekler:**
+
 ```bash
 git commit -m "feat: Add webhook support for payment notifications"
 git commit -m "fix: Resolve 3DS callback parsing issue"
@@ -485,12 +622,14 @@ git push origin release-please--branches--main--prerelease-type--beta
 **3. Release Please Otomatik PR Oluşturur**
 
 Release Please, branch'i algılayıp otomatik olarak bir prerelease PR oluşturur:
+
 - Beta branch için: `1.2.0` → `1.2.0-beta.1`
 - Her yeni commit: `1.2.0-beta.1` → `1.2.0-beta.2`
 
 **4. PR'ı Merge Ederek Prerelease Yayınlayın**
 
 PR'ı merge ettiğinizde:
+
 - Git tag oluşturulur (örn: `v1.2.0-beta.1`)
 - NPM'e beta tag ile yayınlanır
 - Kullanıcılar şu şekilde kurabilir:
@@ -527,11 +666,13 @@ Release Please bir sonraki main PR'ında beta label'ını kaldırıp stable sür
 #### Release Workflow
 
 Normal geliştirme akışı:
+
 ```
 main branch → feat/fix commits → Release Please PR → merge → stable release (1.2.0)
 ```
 
 Prerelease akışı:
+
 ```
 beta branch → feat commits → Release Please PR → merge → beta release (1.2.0-beta.1)
               → more commits → auto update PR → merge → beta release (1.2.0-beta.2)
@@ -562,11 +703,11 @@ MIT
 
 - [x] İyzico entegrasyonu
 - [x] PayTR entegrasyonu
+- [x] İyzico Subscription (Abonelik) desteği
 - [ ] Shopier entegrasyonu
 - [ ] PayU entegrasyonu
 - [ ] Stripe Turkey entegrasyonu
 - [ ] Webhook desteği
-- [ ] Recurring (tekrarlayan) ödemeler
 - [ ] Taksit hesaplama
 - [ ] Daha fazla test coverage
 

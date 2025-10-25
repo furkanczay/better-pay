@@ -1,6 +1,15 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Iyzico } from '../../../src/providers/iyzico';
 import { mockPaymentRequest, mockThreeDSPaymentRequest, mockRefundRequest } from '../../fixtures/payment-data';
+import {
+  mockSubscriptionInitializeRequest,
+  mockSubscriptionCancelRequest,
+  mockSubscriptionUpgradeRequest,
+  mockSubscriptionRetrieveRequest,
+  mockSubscriptionCardUpdateRequest,
+  mockSubscriptionProductRequest,
+  mockPricingPlanRequest,
+} from '../../fixtures/subscription-data';
 
 /**
  * REAL Integration Tests for Iyzico Provider
@@ -30,7 +39,9 @@ describe('Iyzico Provider - Integration Tests', () => {
 
     // Spy on the internal axios client's post method
     const client = (iyzico as any).client;
-    vi.spyOn(client, 'post').mockImplementation(async (url: string, data: any, config: any) => {
+    vi.spyOn(client, 'post').mockImplementation(async (...args: unknown[]) => {
+      const [url, data, config] = args as [string, any, any];
+
       // Capture the request
       capturedRequests.push({
         url,
@@ -39,7 +50,102 @@ describe('Iyzico Provider - Integration Tests', () => {
         rawData: data,
       });
 
-      // Return mock response
+      // Return mock response based on endpoint
+      if (url.includes('/subscription/products')) {
+        return {
+          data: {
+            status: 'success',
+            data: {
+              referenceCode: 'product-ref-123',
+              name: 'Test Product',
+              createdDate: Date.now(),
+            },
+          },
+          status: 200,
+        };
+      } else if (url.includes('/pricing-plans')) {
+        return {
+          data: {
+            status: 'success',
+            data: {
+              referenceCode: 'plan-ref-123',
+              productReferenceCode: 'product-ref-123',
+              name: 'Monthly Plan',
+              price: 99.90,
+              currency: 'TRY',
+              paymentInterval: 'MONTHLY',
+              paymentIntervalCount: 1,
+              createdDate: Date.now(),
+            },
+          },
+          status: 200,
+        };
+      } else if (url.includes('/subscription/initialize')) {
+        return {
+          data: {
+            status: 'success',
+            data: {
+              referenceCode: 'subscription-ref-123',
+              pricingPlanReferenceCode: 'plan-ref-123',
+              customerReferenceCode: 'customer-ref-123',
+              subscriptionStatus: 'ACTIVE',
+              createdDate: Date.now(),
+              startDate: Date.now(),
+            },
+          },
+          status: 200,
+        };
+      } else if (url.includes('/cancel')) {
+        return {
+          data: {
+            status: 'success',
+            data: {
+              referenceCode: 'subscription-ref-123',
+              subscriptionStatus: 'CANCELED',
+            },
+          },
+          status: 200,
+        };
+      } else if (url.includes('/upgrade')) {
+        return {
+          data: {
+            status: 'success',
+            data: {
+              referenceCode: 'subscription-ref-123',
+              pricingPlanReferenceCode: 'new-plan-ref-123',
+              subscriptionStatus: 'ACTIVE',
+            },
+          },
+          status: 200,
+        };
+      } else if (url.includes('/card-update')) {
+        return {
+          data: {
+            status: 'success',
+            token: 'card-update-token-123',
+            paymentPageUrl: 'https://sandbox-api.iyzipay.com/card-update/test-token',
+          },
+          status: 200,
+        };
+      } else if (url.includes('/subscription/subscriptions/')) {
+        return {
+          data: {
+            status: 'success',
+            data: {
+              referenceCode: 'subscription-ref-123',
+              pricingPlanReferenceCode: 'plan-ref-123',
+              pricingPlanName: 'Monthly Plan',
+              customerReferenceCode: 'customer-ref-123',
+              subscriptionStatus: 'ACTIVE',
+              createdDate: Date.now(),
+              startDate: Date.now(),
+            },
+          },
+          status: 200,
+        };
+      }
+
+      // Default payment response
       return {
         data: {
           status: 'success',
@@ -205,6 +311,149 @@ describe('Iyzico Provider - Integration Tests', () => {
     it('should use correct endpoint for refund', async () => {
       await iyzico.refund(mockRefundRequest);
       expect(capturedRequests[0].url).toBe('/payment/refund');
+    });
+  });
+
+  describe('Subscription Product Management', () => {
+    it('should create subscription product with correct format', async () => {
+      await iyzico.createSubscriptionProduct(mockSubscriptionProductRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe('/v2/subscription/products');
+
+      // Verify request body
+      expect(request.data).toHaveProperty('locale', 'tr');
+      expect(request.data).toHaveProperty('conversationId', mockSubscriptionProductRequest.conversationId);
+      expect(request.data).toHaveProperty('name', mockSubscriptionProductRequest.name);
+      expect(request.data).toHaveProperty('description', mockSubscriptionProductRequest.description);
+    });
+
+    it('should create pricing plan with correct format', async () => {
+      await iyzico.createPricingPlan(mockPricingPlanRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe(`/v2/subscription/products/${mockPricingPlanRequest.productReferenceCode}/pricing-plans`);
+
+      // Verify request body
+      expect(request.data).toHaveProperty('productReferenceCode', mockPricingPlanRequest.productReferenceCode);
+      expect(request.data).toHaveProperty('name', mockPricingPlanRequest.name);
+      expect(request.data).toHaveProperty('price', mockPricingPlanRequest.price);
+      expect(request.data).toHaveProperty('currency', mockPricingPlanRequest.currency);
+      expect(request.data).toHaveProperty('paymentInterval', mockPricingPlanRequest.paymentInterval);
+      expect(request.data).toHaveProperty('paymentIntervalCount', mockPricingPlanRequest.paymentIntervalCount);
+      expect(request.data).toHaveProperty('trialPeriodDays', mockPricingPlanRequest.trialPeriodDays);
+      expect(request.data).toHaveProperty('recurrenceCount', mockPricingPlanRequest.recurrenceCount);
+    });
+  });
+
+  describe('Subscription Initialization', () => {
+    it('should initialize subscription with correct format', async () => {
+      await iyzico.initializeSubscription(mockSubscriptionInitializeRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe('/v2/subscription/initialize');
+
+      // Verify request body
+      expect(request.data).toHaveProperty('locale', 'tr');
+      expect(request.data).toHaveProperty('pricingPlanReferenceCode', mockSubscriptionInitializeRequest.pricingPlanReferenceCode);
+      expect(request.data).toHaveProperty('subscriptionInitialStatus', mockSubscriptionInitializeRequest.subscriptionInitialStatus);
+
+      // Verify customer data
+      expect(request.data).toHaveProperty('customer');
+      expect(request.data.customer).toHaveProperty('name', mockSubscriptionInitializeRequest.customer.name);
+      expect(request.data.customer).toHaveProperty('surname', mockSubscriptionInitializeRequest.customer.surname);
+      expect(request.data.customer).toHaveProperty('email', mockSubscriptionInitializeRequest.customer.email);
+      expect(request.data.customer).toHaveProperty('gsmNumber', mockSubscriptionInitializeRequest.customer.gsmNumber);
+      expect(request.data.customer).toHaveProperty('identityNumber', mockSubscriptionInitializeRequest.customer.identityNumber);
+
+      // Verify billing address
+      expect(request.data.customer).toHaveProperty('billingAddress');
+      expect(request.data.customer.billingAddress).toHaveProperty('contactName');
+      expect(request.data.customer.billingAddress).toHaveProperty('city');
+      expect(request.data.customer.billingAddress).toHaveProperty('country');
+      expect(request.data.customer.billingAddress).toHaveProperty('address');
+
+      // Verify payment card
+      expect(request.data).toHaveProperty('paymentCard');
+      expect(request.data.paymentCard).toHaveProperty('cardHolderName', mockSubscriptionInitializeRequest.paymentCard.cardHolderName);
+      expect(request.data.paymentCard).toHaveProperty('cardNumber', mockSubscriptionInitializeRequest.paymentCard.cardNumber);
+      expect(request.data.paymentCard).toHaveProperty('expireMonth', mockSubscriptionInitializeRequest.paymentCard.expireMonth);
+      expect(request.data.paymentCard).toHaveProperty('expireYear', mockSubscriptionInitializeRequest.paymentCard.expireYear);
+      expect(request.data.paymentCard).toHaveProperty('cvc', mockSubscriptionInitializeRequest.paymentCard.cvc);
+    });
+  });
+
+  describe('Subscription Management', () => {
+    it('should cancel subscription with correct endpoint', async () => {
+      await iyzico.cancelSubscription(mockSubscriptionCancelRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint includes subscription reference code
+      expect(request.url).toBe(`/v2/subscription/subscriptions/${mockSubscriptionCancelRequest.subscriptionReferenceCode}/cancel`);
+    });
+
+    it('should upgrade subscription with correct format', async () => {
+      await iyzico.upgradeSubscription(mockSubscriptionUpgradeRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe(`/v2/subscription/subscriptions/${mockSubscriptionUpgradeRequest.subscriptionReferenceCode}/upgrade`);
+
+      // Verify request body
+      expect(request.data).toHaveProperty('newPricingPlanReferenceCode', mockSubscriptionUpgradeRequest.newPricingPlanReferenceCode);
+      expect(request.data).toHaveProperty('useTrial', mockSubscriptionUpgradeRequest.useTrial);
+      expect(request.data).toHaveProperty('resetRecurrenceCount', mockSubscriptionUpgradeRequest.resetRecurrenceCount);
+    });
+
+    it('should retrieve subscription with correct endpoint', async () => {
+      await iyzico.retrieveSubscription(mockSubscriptionRetrieveRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe(`/v2/subscription/subscriptions/${mockSubscriptionRetrieveRequest.subscriptionReferenceCode}`);
+    });
+
+    it('should update subscription card with correct format', async () => {
+      await iyzico.updateSubscriptionCard(mockSubscriptionCardUpdateRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe('/v2/subscription/card-update/checkoutform/initialize');
+
+      // Verify request body
+      expect(request.data).toHaveProperty('locale', 'tr');
+      expect(request.data).toHaveProperty('subscriptionReferenceCode', mockSubscriptionCardUpdateRequest.subscriptionReferenceCode);
+      expect(request.data).toHaveProperty('callbackUrl', mockSubscriptionCardUpdateRequest.callbackUrl);
+      expect(request.data).toHaveProperty('conversationId', mockSubscriptionCardUpdateRequest.conversationId);
+    });
+  });
+
+  describe('Subscription Authorization', () => {
+    it('should include IYZWSv2 authorization in subscription requests', async () => {
+      await iyzico.initializeSubscription(mockSubscriptionInitializeRequest);
+
+      const request = capturedRequests[0];
+
+      // Should have IYZWSv2 authorization
+      expect(request.headers.Authorization).toBeDefined();
+      expect(request.headers.Authorization).toMatch(/^IYZWSv2 /);
     });
   });
 });

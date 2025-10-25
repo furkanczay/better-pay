@@ -464,4 +464,218 @@ export class Iyzico extends PaymentProvider {
       };
     }
   }
+
+  /**
+   * ===================
+   * SUBSCRIPTION METHODS
+   * ===================
+   */
+
+  /**
+   * Abonelik başlat (NON3D)
+   */
+  async initializeSubscription(request: import('../../types').SubscriptionInitializeRequest): Promise<import('../../types').SubscriptionInitializeResponse> {
+    try {
+      const iyzicoRequest = {
+        locale: request.locale || this.config.locale || 'tr',
+        conversationId: request.conversationId,
+        pricingPlanReferenceCode: request.pricingPlanReferenceCode,
+        subscriptionInitialStatus: request.subscriptionInitialStatus,
+        customer: {
+          name: request.customer.name,
+          surname: request.customer.surname,
+          email: request.customer.email,
+          gsmNumber: request.customer.gsmNumber,
+          identityNumber: request.customer.identityNumber,
+          billingAddress: {
+            contactName: request.customer.billingAddress.contactName,
+            city: request.customer.billingAddress.city,
+            country: request.customer.billingAddress.country,
+            address: request.customer.billingAddress.address,
+            zipCode: request.customer.billingAddress.zipCode,
+          },
+          shippingAddress: request.customer.shippingAddress ? {
+            contactName: request.customer.shippingAddress.contactName,
+            city: request.customer.shippingAddress.city,
+            country: request.customer.shippingAddress.country,
+            address: request.customer.shippingAddress.address,
+            zipCode: request.customer.shippingAddress.zipCode,
+          } : undefined,
+        },
+        paymentCard: {
+          cardHolderName: request.paymentCard.cardHolderName,
+          cardNumber: request.paymentCard.cardNumber,
+          expireMonth: request.paymentCard.expireMonth,
+          expireYear: request.paymentCard.expireYear,
+          cvc: request.paymentCard.cvc,
+        },
+      };
+
+      const response = await this.sendRequest<any>(
+        '/v2/subscription/initialize',
+        iyzicoRequest
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Subscription initialization failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
+
+  /**
+   * Aboneliği iptal et
+   */
+  async cancelSubscription(request: import('../../types').SubscriptionCancelRequest): Promise<import('../../types').SubscriptionCancelResponse> {
+    try {
+      const response = await this.sendRequest<any>(
+        `/v2/subscription/subscriptions/${request.subscriptionReferenceCode}/cancel`,
+        {}
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Subscription cancellation failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
+
+  /**
+   * Aboneliği yükselt/güncelle
+   */
+  async upgradeSubscription(request: import('../../types').SubscriptionUpgradeRequest): Promise<import('../../types').SubscriptionUpgradeResponse> {
+    try {
+      const iyzicoRequest = {
+        newPricingPlanReferenceCode: request.newPricingPlanReferenceCode,
+        useTrial: request.useTrial,
+        resetRecurrenceCount: request.resetRecurrenceCount,
+      };
+
+      const response = await this.sendRequest<any>(
+        `/v2/subscription/subscriptions/${request.subscriptionReferenceCode}/upgrade`,
+        iyzicoRequest
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Subscription upgrade failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
+
+  /**
+   * Abonelik detaylarını getir
+   */
+  async retrieveSubscription(request: import('../../types').SubscriptionRetrieveRequest): Promise<import('../../types').SubscriptionRetrieveResponse> {
+    try {
+      const response = await this.sendRequest<any>(
+        `/v2/subscription/subscriptions/${request.subscriptionReferenceCode}`,
+        {}
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Subscription retrieve failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
+
+  /**
+   * Abonelik kartı güncelle (Checkout Form ile)
+   */
+  async updateSubscriptionCard(request: import('../../types').SubscriptionCardUpdateRequest): Promise<import('../../types').SubscriptionCardUpdateResponse> {
+    try {
+      const iyzicoRequest = {
+        locale: request.locale || this.config.locale || 'tr',
+        conversationId: request.conversationId,
+        subscriptionReferenceCode: request.subscriptionReferenceCode,
+        callbackUrl: request.callbackUrl,
+      };
+
+      const response = await this.sendRequest<any>(
+        '/v2/subscription/card-update/checkoutform/initialize',
+        iyzicoRequest
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Card update initialization failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
+
+  /**
+   * Abonelik ürünü oluştur
+   */
+  async createSubscriptionProduct(request: import('../../types').SubscriptionProductCreateRequest): Promise<import('../../types').SubscriptionProductResponse> {
+    try {
+      const iyzicoRequest = {
+        locale: request.locale || this.config.locale || 'tr',
+        conversationId: request.conversationId,
+        name: request.name,
+        description: request.description,
+      };
+
+      const response = await this.sendRequest<any>(
+        '/v2/subscription/products',
+        iyzicoRequest
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Product creation failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
+
+  /**
+   * Fiyatlandırma planı oluştur
+   */
+  async createPricingPlan(request: import('../../types').PricingPlanCreateRequest): Promise<import('../../types').PricingPlanResponse> {
+    try {
+      const iyzicoRequest = {
+        locale: request.locale || this.config.locale || 'tr',
+        conversationId: request.conversationId,
+        productReferenceCode: request.productReferenceCode,
+        name: request.name,
+        price: request.price,
+        currency: request.currency || 'TRY',
+        paymentInterval: request.paymentInterval,
+        paymentIntervalCount: request.paymentIntervalCount,
+        trialPeriodDays: request.trialPeriodDays,
+        recurrenceCount: request.recurrenceCount,
+      };
+
+      const response = await this.sendRequest<any>(
+        `/v2/subscription/products/${request.productReferenceCode}/pricing-plans`,
+        iyzicoRequest
+      );
+
+      return response;
+    } catch (error: any) {
+      return {
+        status: 'failure',
+        errorMessage: error.message || 'Pricing plan creation failed',
+        errorCode: error.response?.data?.errorCode,
+      };
+    }
+  }
 }
