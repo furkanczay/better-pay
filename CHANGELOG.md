@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.3.0...better-payment-v1.4.0) (2025-10-25)
+
+
+### Features
+
+* add PaymentStatus enum and PaymentMetadata interface for better transaction tracking ([26f172e](https://github.com/furkanczay/better-payment/commit/26f172e3d8fa75750757e3e29d4ecb6eb91f677e))
+* Beta branch ([a9c3eac](https://github.com/furkanczay/better-payment/commit/a9c3eac6544b22cfee63689674303a8186b88365))
+
+
+### Bug Fixes
+
+* set target-branch to beta in release-please workflow ([1aa6668](https://github.com/furkanczay/better-payment/commit/1aa6668516e60874dd742d6ca2ccac336557b67d))
+
 ## [1.3.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.2.4...better-payment-v1.3.0) (2025-10-25)
 
 
