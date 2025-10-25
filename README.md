@@ -19,9 +19,7 @@ Türkiye'deki tüm ödeme altyapılarını entegre edebilen unified payment gate
 
 - ✅ **İyzico** - Tam destek (V2 Authorization, Checkout Form, Subscription)
 - ✅ **PayTR** - Tam destek
-- 🔜 **Shopier** - Planlanan
-- 🔜 **PayU** - Planlanan
-- 🔜 **Stripe Turkey** - Planlanan
+- 🔜 **ParamPOS** - Planlanan
 
 ## Kurulum
 
@@ -701,15 +699,24 @@ MIT
 
 ## Roadmap
 
-- [x] İyzico entegrasyonu
+- [x] İyzico
+- - [x] Non3D Ödeme
+- - [x] 3D Secure Ödeme
+- - [x] Checkout Form
+- - [x] Abonelik (Subscription) Desteği
+- - [x] İade ve İptal
+- - [x] Ödeme Sorgulama
+- - [x] TypeScript Desteği
+- - [ ] BIN Check
 - [x] PayTR entegrasyonu
-- [x] İyzico Subscription (Abonelik) desteği
-- [ ] Shopier entegrasyonu
-- [ ] PayU entegrasyonu
-- [ ] Stripe Turkey entegrasyonu
-- [ ] Webhook desteği
-- [ ] Taksit hesaplama
-- [ ] Daha fazla test coverage
+- - [x] Non3D Ödeme
+- - [x] 3D Secure Ödeme
+- - [x] TypeScript Desteği
+- - [ ] BIN Check
+- [ ] ParamPOS
+- - [ ] Non3D Ödeme
+- - [ ] 3D Secure Ödeme
+- - [ ] TypeScript Desteği
 
 ---
 
