@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.2.4...better-payment-v1.3.0) (2025-10-25)
+
+
+### Features
+
+* **iyzico:** Subscription ([9d1641d](https://github.com/furkanczay/better-payment/commit/9d1641dc90f91f10616e87ff226cffd11f4a42eb))
+
 ## [1.2.4](https://github.com/furkanczay/better-payment/compare/better-payment-v1.2.3...better-payment-v1.2.4) (2025-10-25)
 
 
