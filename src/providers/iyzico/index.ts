@@ -474,7 +474,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Abonelik başlat (NON3D)
    */
-  async initializeSubscription(request: import('../../types').SubscriptionInitializeRequest): Promise<import('../../types').SubscriptionInitializeResponse> {
+  async initializeSubscription(
+    request: import('../../types').SubscriptionInitializeRequest
+  ): Promise<import('../../types').SubscriptionInitializeResponse> {
     try {
       const iyzicoRequest = {
         locale: request.locale || this.config.locale || 'tr',
@@ -494,13 +496,15 @@ export class Iyzico extends PaymentProvider {
             address: request.customer.billingAddress.address,
             zipCode: request.customer.billingAddress.zipCode,
           },
-          shippingAddress: request.customer.shippingAddress ? {
-            contactName: request.customer.shippingAddress.contactName,
-            city: request.customer.shippingAddress.city,
-            country: request.customer.shippingAddress.country,
-            address: request.customer.shippingAddress.address,
-            zipCode: request.customer.shippingAddress.zipCode,
-          } : undefined,
+          shippingAddress: request.customer.shippingAddress
+            ? {
+                contactName: request.customer.shippingAddress.contactName,
+                city: request.customer.shippingAddress.city,
+                country: request.customer.shippingAddress.country,
+                address: request.customer.shippingAddress.address,
+                zipCode: request.customer.shippingAddress.zipCode,
+              }
+            : undefined,
         },
         paymentCard: {
           cardHolderName: request.paymentCard.cardHolderName,
@@ -511,10 +515,7 @@ export class Iyzico extends PaymentProvider {
         },
       };
 
-      const response = await this.sendRequest<any>(
-        '/v2/subscription/initialize',
-        iyzicoRequest
-      );
+      const response = await this.sendRequest<any>('/v2/subscription/initialize', iyzicoRequest);
 
       return response;
     } catch (error: any) {
@@ -529,7 +530,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Aboneliği iptal et
    */
-  async cancelSubscription(request: import('../../types').SubscriptionCancelRequest): Promise<import('../../types').SubscriptionCancelResponse> {
+  async cancelSubscription(
+    request: import('../../types').SubscriptionCancelRequest
+  ): Promise<import('../../types').SubscriptionCancelResponse> {
     try {
       const response = await this.sendRequest<any>(
         `/v2/subscription/subscriptions/${request.subscriptionReferenceCode}/cancel`,
@@ -549,7 +552,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Aboneliği yükselt/güncelle
    */
-  async upgradeSubscription(request: import('../../types').SubscriptionUpgradeRequest): Promise<import('../../types').SubscriptionUpgradeResponse> {
+  async upgradeSubscription(
+    request: import('../../types').SubscriptionUpgradeRequest
+  ): Promise<import('../../types').SubscriptionUpgradeResponse> {
     try {
       const iyzicoRequest = {
         newPricingPlanReferenceCode: request.newPricingPlanReferenceCode,
@@ -575,7 +580,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Abonelik detaylarını getir
    */
-  async retrieveSubscription(request: import('../../types').SubscriptionRetrieveRequest): Promise<import('../../types').SubscriptionRetrieveResponse> {
+  async retrieveSubscription(
+    request: import('../../types').SubscriptionRetrieveRequest
+  ): Promise<import('../../types').SubscriptionRetrieveResponse> {
     try {
       const response = await this.sendRequest<any>(
         `/v2/subscription/subscriptions/${request.subscriptionReferenceCode}`,
@@ -595,7 +602,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Abonelik kartı güncelle (Checkout Form ile)
    */
-  async updateSubscriptionCard(request: import('../../types').SubscriptionCardUpdateRequest): Promise<import('../../types').SubscriptionCardUpdateResponse> {
+  async updateSubscriptionCard(
+    request: import('../../types').SubscriptionCardUpdateRequest
+  ): Promise<import('../../types').SubscriptionCardUpdateResponse> {
     try {
       const iyzicoRequest = {
         locale: request.locale || this.config.locale || 'tr',
@@ -622,7 +631,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Abonelik ürünü oluştur
    */
-  async createSubscriptionProduct(request: import('../../types').SubscriptionProductCreateRequest): Promise<import('../../types').SubscriptionProductResponse> {
+  async createSubscriptionProduct(
+    request: import('../../types').SubscriptionProductCreateRequest
+  ): Promise<import('../../types').SubscriptionProductResponse> {
     try {
       const iyzicoRequest = {
         locale: request.locale || this.config.locale || 'tr',
@@ -631,10 +642,7 @@ export class Iyzico extends PaymentProvider {
         description: request.description,
       };
 
-      const response = await this.sendRequest<any>(
-        '/v2/subscription/products',
-        iyzicoRequest
-      );
+      const response = await this.sendRequest<any>('/v2/subscription/products', iyzicoRequest);
 
       return response;
     } catch (error: any) {
@@ -649,7 +657,9 @@ export class Iyzico extends PaymentProvider {
   /**
    * Fiyatlandırma planı oluştur
    */
-  async createPricingPlan(request: import('../../types').PricingPlanCreateRequest): Promise<import('../../types').PricingPlanResponse> {
+  async createPricingPlan(
+    request: import('../../types').PricingPlanCreateRequest
+  ): Promise<import('../../types').PricingPlanResponse> {
     try {
       const iyzicoRequest = {
         locale: request.locale || this.config.locale || 'tr',
