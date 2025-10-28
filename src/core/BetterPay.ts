@@ -2,6 +2,7 @@ import { PaymentProvider, PaymentProviderConfig } from './PaymentProvider';
 import { BetterPayConfig, ProviderType, ProviderInstances } from './BetterPayConfig';
 import { Iyzico } from '../providers/iyzico';
 import { PayTR } from '../providers/paytr';
+import { Akbank } from '../providers/akbank';
 import {
   PaymentRequest,
   PaymentResponse,
@@ -112,6 +113,13 @@ export class BetterPay {
       this.providers[ProviderType.PAYTR] = new PayTR(paytrConfig as any);
     }
 
+    // Akbank provider'ı başlat
+    if (this.config.providers[ProviderType.AKBANK]?.enabled) {
+      const akbankConfig = this.config.providers[ProviderType.AKBANK].config;
+      this.validateAkbankConfig(akbankConfig);
+      this.providers[ProviderType.AKBANK] = new Akbank(akbankConfig as any);
+    }
+
     // Default provider kontrolü
     if (this.defaultProvider && !this.providers[this.defaultProvider]) {
       throw new Error(`Default provider '${this.defaultProvider}' is not enabled or configured`);
@@ -185,6 +193,47 @@ export class BetterPay {
           `  PAYTR_MERCHANT_KEY=your-merchant-key\n` +
           `  PAYTR_MERCHANT_SALT=your-merchant-salt\n` +
           `  PAYTR_BASE_URL=https://www.paytr.com\n\n` +
+          `Or configure them directly in your BetterPay config.`
+      );
+    }
+  }
+
+  /**
+   * Akbank config validation
+   */
+  private validateAkbankConfig(
+    config: PaymentProviderConfig & {
+      merchantId: string;
+      terminalId: string;
+      storeKey: string;
+      secure3DStoreKey?: string;
+    }
+  ): void {
+    const missingFields: string[] = [];
+
+    if (!config.merchantId) {
+      missingFields.push('merchantId (AKBANK_MERCHANT_ID)');
+    }
+    if (!config.terminalId) {
+      missingFields.push('terminalId (AKBANK_TERMINAL_ID)');
+    }
+    if (!config.storeKey) {
+      missingFields.push('storeKey (AKBANK_STORE_KEY)');
+    }
+    if (!config.baseUrl) {
+      missingFields.push('baseUrl (AKBANK_BASE_URL)');
+    }
+
+    if (missingFields.length > 0) {
+      throw new Error(
+        `Akbank provider configuration is missing required fields:\n` +
+          `  - ${missingFields.join('\n  - ')}\n\n` +
+          `Please add these environment variables to your .env file:\n` +
+          `  AKBANK_MERCHANT_ID=your-merchant-id\n` +
+          `  AKBANK_TERMINAL_ID=your-terminal-id\n` +
+          `  AKBANK_STORE_KEY=your-store-key\n` +
+          `  AKBANK_SECURE3D_STORE_KEY=your-3d-store-key (optional, for 3DS payments)\n` +
+          `  AKBANK_BASE_URL=https://www.akbank.com/api\n\n` +
           `Or configure them directly in your BetterPay config.`
       );
     }
@@ -343,5 +392,46 @@ export class BetterPay {
       );
     }
     return provider as PayTR;
+  }
+
+  /**
+   * Akbank provider'ına doğrudan erişim
+   *
+   * @example
+   * ```typescript
+   * const result = await betterPay.akbank.createPayment({ ... });
+   * const threeDSResult = await betterPay.akbank.initThreeDSPayment({ ... });
+   * ```
+   *
+   * @throws Error if Akbank provider is not enabled or configured
+   */
+  get akbank(): Akbank {
+    const provider = this.providers[ProviderType.AKBANK];
+    if (!provider) {
+      const enabledProviders = this.getEnabledProviders();
+      throw new Error(
+        `Akbank provider is not enabled or configured.\n` +
+          `Enabled providers: ${enabledProviders.length > 0 ? enabledProviders.join(', ') : 'none'}\n` +
+          `Please add Akbank configuration to your BetterPay config:\n` +
+          `{\n` +
+          `  providers: {\n` +
+          `    akbank: {\n` +
+          `      enabled: true,\n` +
+          `      config: {\n` +
+          `        merchantId: process.env.AKBANK_MERCHANT_ID,\n` +
+          `        terminalId: process.env.AKBANK_TERMINAL_ID,\n` +
+          `        storeKey: process.env.AKBANK_STORE_KEY,\n` +
+          `        secure3DStoreKey: process.env.AKBANK_SECURE3D_STORE_KEY,\n` +
+          `        apiKey: process.env.AKBANK_API_KEY,\n` +
+          `        secretKey: process.env.AKBANK_SECRET_KEY,\n` +
+          `        baseUrl: 'https://www.akbank.com/api',\n` +
+          `        testMode: true\n` +
+          `      }\n` +
+          `    }\n` +
+          `  }\n` +
+          `}`
+      );
+    }
+    return provider as Akbank;
   }
 }

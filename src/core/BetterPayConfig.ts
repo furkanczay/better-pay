@@ -6,6 +6,7 @@ import { PaymentProviderConfig } from './PaymentProvider';
 export enum ProviderType {
   IYZICO = 'iyzico',
   PAYTR = 'paytr',
+  AKBANK = 'akbank',
 }
 
 /**
@@ -28,13 +29,34 @@ export interface PayTRProviderConfig {
 }
 
 /**
+ * Akbank provider config (ek alanlar gerekiyor)
+ */
+export interface AkbankProviderConfig {
+  enabled: boolean;
+  config: PaymentProviderConfig & {
+    merchantId: string;
+    terminalId: string;
+    storeKey: string;
+    secure3DStoreKey?: string;
+    testMode?: boolean;
+  };
+}
+
+/**
  * Her provider için config (generic type)
  */
 export interface ProviderConfig {
   enabled: boolean;
   config:
     | PaymentProviderConfig
-    | (PaymentProviderConfig & { merchantId: string; merchantSalt: string });
+    | (PaymentProviderConfig & { merchantId: string; merchantSalt: string })
+    | (PaymentProviderConfig & {
+        merchantId: string;
+        terminalId: string;
+        storeKey: string;
+        secure3DStoreKey?: string;
+        testMode?: boolean;
+      });
 }
 
 /**
@@ -44,6 +66,7 @@ export interface BetterPayConfig {
   providers: {
     [ProviderType.IYZICO]?: IyzicoProviderConfig;
     [ProviderType.PAYTR]?: PayTRProviderConfig;
+    [ProviderType.AKBANK]?: AkbankProviderConfig;
   };
   defaultProvider?: ProviderType;
 }
@@ -54,4 +77,5 @@ export interface BetterPayConfig {
 export interface ProviderInstances {
   [ProviderType.IYZICO]?: any;
   [ProviderType.PAYTR]?: any;
+  [ProviderType.AKBANK]?: any;
 }

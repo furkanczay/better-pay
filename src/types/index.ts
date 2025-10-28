@@ -113,6 +113,7 @@ export interface PaymentResponse {
  */
 export interface ThreeDSPaymentRequest extends PaymentRequest {
   callbackUrl: string;
+  installment?: number;
 }
 
 /**

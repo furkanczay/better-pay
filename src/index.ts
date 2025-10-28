@@ -40,3 +40,4 @@ export {
 // Provider exports (for advanced usage - direct provider access)
 export { Iyzico } from './providers/iyzico';
 export { PayTR } from './providers/paytr';
+export { Akbank } from './providers/akbank';
