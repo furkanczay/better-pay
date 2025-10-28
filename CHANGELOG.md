@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.4.0...better-payment-v1.5.0) (2025-10-28)
+
+
+### Features
+
+* Akbank Provider ([54e27c4](https://github.com/furkanczay/better-payment/commit/54e27c4600f0299da4cd6ea5c4ccf578dec335b1))
+
 ## [1.4.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.3.0...better-payment-v1.4.0) (2025-10-25)
 
 
