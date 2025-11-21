@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.5.0...better-payment-v1.6.0) (2025-11-21)
+
+
+### Features
+
+* add roadmap for Turkish bank virtual POS integrations ([8ac088c](https://github.com/furkanczay/better-payment/commit/8ac088c5d5142c52c27fac2ede6273caec7aa0b7))
+
 ## [1.5.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.4.0...better-payment-v1.5.0) (2025-10-28)
 
 
