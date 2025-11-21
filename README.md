@@ -700,6 +700,8 @@ MIT
 
 ## Roadmap
 
+### Ödeme Altyapıları
+
 - [x] İyzico
   - [x] Non3D Ödeme
   - [x] 3D Secure Ödeme
@@ -717,6 +719,59 @@ MIT
 - [ ] ParamPOS
   - [ ] Non3D Ödeme
   - [ ] 3D Secure Ödeme
+  - [ ] TypeScript Desteği
+
+### Banka Sanal POS'ları
+
+- [ ] Akbank Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] Garanti BBVA Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] İş Bankası Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] Yapı Kredi Sanal POS (POSNET)
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] Ziraat Bankası Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] Vakıfbank Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] Halkbank Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] QNB Finansbank Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] Denizbank Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
+  - [ ] TypeScript Desteği
+- [ ] TEB Sanal POS
+  - [ ] Non3D Ödeme
+  - [ ] 3D Secure Ödeme
+  - [ ] İade ve İptal
   - [ ] TypeScript Desteği
 
 ---
