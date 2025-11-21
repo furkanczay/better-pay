@@ -192,10 +192,7 @@ export class Akbank extends PaymentProvider {
       }
 
       const formData = this.createFormData(akbankRequest);
-      const response = await this.client.post<Akbank3DSInitResponse>(
-        '/servlet/3DGate',
-        formData
-      );
+      const response = await this.client.post<Akbank3DSInitResponse>('/servlet/3DGate', formData);
 
       if (response.data.ProcReturnCode === 'Success' && response.data.Message) {
         return {
@@ -225,9 +222,7 @@ export class Akbank extends PaymentProvider {
   /**
    * 3D Secure ödeme tamamla
    */
-  async completeThreeDSPayment(
-    callbackData: Akbank3DSCallbackRequest
-  ): Promise<PaymentResponse> {
+  async completeThreeDSPayment(callbackData: Akbank3DSCallbackRequest): Promise<PaymentResponse> {
     try {
       if (!this.secure3DStoreKey) {
         throw new Error('3D Secure Store Key is required for 3DS payments');
@@ -412,10 +407,7 @@ export class Akbank extends PaymentProvider {
       };
 
       const formData = this.createFormData(akbankRequest);
-      const response = await this.client.post<AkbankResponse>(
-        '/servlet/PaymentGateway',
-        formData
-      );
+      const response = await this.client.post<AkbankResponse>('/servlet/PaymentGateway', formData);
 
       return {
         status: this.mapStatus(response.data.ProcReturnCode),
