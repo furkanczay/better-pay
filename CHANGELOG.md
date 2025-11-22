@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/furkanczay/better-payment/compare/v2.0.0...v2.1.0) (2025-11-22)
+
+
+### ✨ Features
+
+* **iyzico:** add BIN check support and comprehensive tests ([c5373af](https://github.com/furkanczay/better-payment/commit/c5373af9e34e6d2c2d793c5e2e1e5064ba5e0f83))
+
 ## [2.0.0](https://github.com/furkanczay/better-payment/compare/v1.4.0-beta.0...v2.0.0) (2025-11-22)
 
 
