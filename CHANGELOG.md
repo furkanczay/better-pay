@@ -1,5 +1,25 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [2.0.0](https://github.com/furkanczay/better-payment/compare/v1.4.0-beta.0...v2.0.0) (2025-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* Release workflow changed from release-please to standard-version
+
+### 🐛 Bug Fixes
+
+* Format ([ec63ade](https://github.com/furkanczay/better-payment/commit/ec63ade8024fbddbcbd6c063467b74f953e241bb))
+
+
+### ✨ Features
+
+* add roadmap for Turkish bank virtual POS integrations ([8ac088c](https://github.com/furkanczay/better-payment/commit/8ac088c5d5142c52c27fac2ede6273caec7aa0b7))
+* Akbank Provider ([54e27c4](https://github.com/furkanczay/better-payment/commit/54e27c4600f0299da4cd6ea5c4ccf578dec335b1))
+* replace release-please with standard-version for better release control ([4ac4df7](https://github.com/furkanczay/better-payment/commit/4ac4df7cfe296586fd1fd9a60633646a7149aebe))
+
 ## [1.5.0](https://github.com/furkanczay/better-payment/compare/better-payment-v1.4.0...better-payment-v1.5.0) (2025-10-28)
 
 
