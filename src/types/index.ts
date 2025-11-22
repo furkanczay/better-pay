@@ -166,11 +166,28 @@ export interface CancelRequest {
  */
 export interface CancelResponse {
   status: PaymentStatus;
+  transactionId?: string;
+  voidId?: string;
   conversationId?: string;
   errorCode?: string;
   errorMessage?: string;
-  rawResponse?: any;
+  rawResponse: unknown;
 }
+
+/**
+ * BIN sorgulama yanıtı
+ */
+export interface BinCheckResponse {
+  binNumber: string;
+  cardType: string;
+  cardAssociation: string;
+  cardFamily: string;
+  bankName: string;
+  bankCode: number;
+  commercial: boolean;
+  rawResponse?: unknown;
+}
+
 
 /**
  * Checkout Form isteği

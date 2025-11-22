@@ -13,6 +13,7 @@ import {
   CheckoutFormRequest,
   CheckoutFormInitResponse,
   CheckoutFormRetrieveResponse,
+  BinCheckResponse,
 } from '../../types';
 import { createIyzicoHeaders } from './utils';
 import {
@@ -24,6 +25,8 @@ import {
   IyzicoCheckoutFormRequest,
   IyzicoCheckoutFormInitResponse,
   IyzicoCheckoutFormRetrieveResponse,
+  IyzicoBinCheckRequest,
+  IyzicoBinCheckResponse,
 } from './types';
 
 /**
@@ -687,5 +690,36 @@ export class Iyzico extends PaymentProvider {
         errorCode: error.response?.data?.errorCode,
       };
     }
+  }
+
+  /**
+   * BIN sorgulama
+   */
+  async binCheck(binNumber: string): Promise<BinCheckResponse> {
+    const request: IyzicoBinCheckRequest = {
+      locale: this.config.locale,
+      conversationId: '123456789',
+      binNumber: binNumber,
+    };
+
+    const response = await this.sendRequest<IyzicoBinCheckResponse>(
+      '/payment/bin/check',
+      request
+    );
+
+    if (response.status !== 'success') {
+      throw new Error(response.errorMessage || 'BIN check failed');
+    }
+
+    return {
+      binNumber: response.binNumber || binNumber,
+      cardType: response.cardType || '',
+      cardAssociation: response.cardAssociation || '',
+      cardFamily: response.cardFamily || '',
+      bankName: response.bankName || '',
+      bankCode: response.bankCode || 0,
+      commercial: response.commercial === 1,
+      rawResponse: response,
+    };
   }
 }

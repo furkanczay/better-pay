@@ -710,7 +710,7 @@ MIT
   - [x] İade ve İptal
   - [x] Ödeme Sorgulama
   - [x] TypeScript Desteği
-  - [ ] BIN Check
+  - [x] BIN Check
 - [x] PayTR entegrasyonu
   - [x] Non3D Ödeme
   - [x] 3D Secure Ödeme

@@ -171,3 +171,19 @@ export interface IyzicoCheckoutFormRetrieveResponse extends IyzicoResponse {
   iyziCommissionFee?: number;
   paymentTransactionId?: string;
 }
+
+export interface IyzicoBinCheckRequest {
+  locale?: string;
+  conversationId?: string;
+  binNumber: string;
+}
+
+export interface IyzicoBinCheckResponse extends IyzicoResponse {
+  binNumber?: string;
+  cardType?: string;
+  cardAssociation?: string;
+  cardFamily?: string;
+  bankName?: string;
+  bankCode?: number;
+  commercial?: number;
+}

@@ -7,6 +7,7 @@ import {
   RefundResponse,
   CancelRequest,
   CancelResponse,
+  BinCheckResponse,
 } from '../types';
 
 /**
@@ -77,4 +78,11 @@ export abstract class PaymentProvider {
    * Ödeme sorgulama
    */
   abstract getPayment(paymentId: string): Promise<PaymentResponse>;
+
+  /**
+   * BIN sorgulama
+   */
+  async binCheck(binNumber: string): Promise<BinCheckResponse> {
+    throw new Error('BIN check not supported by this provider');
+  }
 }

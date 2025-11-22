@@ -456,4 +456,20 @@ describe('Iyzico Provider - Integration Tests', () => {
       expect(request.headers.Authorization).toMatch(/^IYZWSv2 /);
     });
   });
+
+  describe('BIN Check', () => {
+    it('should send correct BIN check request', async () => {
+      await iyzico.binCheck('454360');
+
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe('/payment/bin/check');
+
+      // Verify request body
+      expect(request.data).toHaveProperty('locale', 'tr');
+      expect(request.data).toHaveProperty('binNumber', '454360');
+      expect(request.data).toHaveProperty('conversationId');
+    });
+  });
 });
