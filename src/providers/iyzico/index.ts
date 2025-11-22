@@ -702,10 +702,7 @@ export class Iyzico extends PaymentProvider {
       binNumber: binNumber,
     };
 
-    const response = await this.sendRequest<IyzicoBinCheckResponse>(
-      '/payment/bin/check',
-      request
-    );
+    const response = await this.sendRequest<IyzicoBinCheckResponse>('/payment/bin/check', request);
 
     if (response.status !== 'success') {
       throw new Error(response.errorMessage || 'BIN check failed');

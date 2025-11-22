@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { createAkbankHash, createAkbank3DHash, verifyAkbank3DHash, formatAmount, parseAmount } from '../../../../src/providers/akbank/utils';
+import {
+  createAkbankHash,
+  createAkbank3DHash,
+  verifyAkbank3DHash,
+  formatAmount,
+  parseAmount,
+} from '../../../../src/providers/akbank/utils';
 import * as crypto from 'crypto';
 
 describe('Akbank Utils - Unit Tests', () => {
@@ -16,7 +22,10 @@ describe('Akbank Utils - Unit Tests', () => {
       };
 
       const expectedData = 'MERCHANT|TERMINAL|ORDER123|10000|949|Auth|STOREKEY';
-      const expectedHash = crypto.createHash('sha512').update(expectedData, 'utf8').digest('base64');
+      const expectedHash = crypto
+        .createHash('sha512')
+        .update(expectedData, 'utf8')
+        .digest('base64');
 
       const result = createAkbankHash(params);
       expect(result).toBe(expectedHash);
@@ -37,8 +46,12 @@ describe('Akbank Utils - Unit Tests', () => {
         txnType: 'Auth',
       };
 
-      const expectedData = 'MERCHANT|TERMINAL|ORDER123|10000|949|https://success.com|https://error.com|Auth|3DSTOREKEY';
-      const expectedHash = crypto.createHash('sha512').update(expectedData, 'utf8').digest('base64');
+      const expectedData =
+        'MERCHANT|TERMINAL|ORDER123|10000|949|https://success.com|https://error.com|Auth|3DSTOREKEY';
+      const expectedHash = crypto
+        .createHash('sha512')
+        .update(expectedData, 'utf8')
+        .digest('base64');
 
       const result = createAkbank3DHash(params);
       expect(result).toBe(expectedHash);
@@ -86,7 +99,7 @@ describe('Akbank Utils - Unit Tests', () => {
   describe('formatAmount', () => {
     it('should format amount correctly', () => {
       expect(formatAmount(100)).toBe('10000');
-      expect(formatAmount(100.50)).toBe('10050');
+      expect(formatAmount(100.5)).toBe('10050');
       expect(formatAmount(100.55)).toBe('10055');
     });
   });
@@ -94,7 +107,7 @@ describe('Akbank Utils - Unit Tests', () => {
   describe('parseAmount', () => {
     it('should parse amount correctly', () => {
       expect(parseAmount('10000')).toBe(100);
-      expect(parseAmount('10050')).toBe(100.50);
+      expect(parseAmount('10050')).toBe(100.5);
       expect(parseAmount('10055')).toBe(100.55);
     });
   });

@@ -188,7 +188,6 @@ export interface BinCheckResponse {
   rawResponse?: unknown;
 }
 
-
 /**
  * Checkout Form isteği
  */

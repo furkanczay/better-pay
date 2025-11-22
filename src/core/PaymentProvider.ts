@@ -83,6 +83,6 @@ export abstract class PaymentProvider {
    * BIN sorgulama
    */
   async binCheck(binNumber: string): Promise<BinCheckResponse> {
-    throw new Error('BIN check not supported by this provider');
+    throw new Error(`BIN check for ${binNumber} not supported by this provider`);
   }
 }

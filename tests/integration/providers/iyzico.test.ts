@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Iyzico } from '../../../src/providers/iyzico';
-import { mockPaymentRequest, mockThreeDSPaymentRequest, mockRefundRequest } from '../../fixtures/payment-data';
+import {
+  mockPaymentRequest,
+  mockThreeDSPaymentRequest,
+  mockRefundRequest,
+} from '../../fixtures/payment-data';
 import {
   mockSubscriptionInitializeRequest,
   mockSubscriptionCancelRequest,
@@ -71,7 +75,7 @@ describe('Iyzico Provider - Integration Tests', () => {
               referenceCode: 'plan-ref-123',
               productReferenceCode: 'product-ref-123',
               name: 'Monthly Plan',
-              price: 99.90,
+              price: 99.9,
               currency: 'TRY',
               paymentInterval: 'MONTHLY',
               paymentIntervalCount: 1,
@@ -326,9 +330,15 @@ describe('Iyzico Provider - Integration Tests', () => {
 
       // Verify request body
       expect(request.data).toHaveProperty('locale', 'tr');
-      expect(request.data).toHaveProperty('conversationId', mockSubscriptionProductRequest.conversationId);
+      expect(request.data).toHaveProperty(
+        'conversationId',
+        mockSubscriptionProductRequest.conversationId
+      );
       expect(request.data).toHaveProperty('name', mockSubscriptionProductRequest.name);
-      expect(request.data).toHaveProperty('description', mockSubscriptionProductRequest.description);
+      expect(request.data).toHaveProperty(
+        'description',
+        mockSubscriptionProductRequest.description
+      );
     });
 
     it('should create pricing plan with correct format', async () => {
@@ -338,17 +348,34 @@ describe('Iyzico Provider - Integration Tests', () => {
       const request = capturedRequests[0];
 
       // Verify endpoint
-      expect(request.url).toBe(`/v2/subscription/products/${mockPricingPlanRequest.productReferenceCode}/pricing-plans`);
+      expect(request.url).toBe(
+        `/v2/subscription/products/${mockPricingPlanRequest.productReferenceCode}/pricing-plans`
+      );
 
       // Verify request body
-      expect(request.data).toHaveProperty('productReferenceCode', mockPricingPlanRequest.productReferenceCode);
+      expect(request.data).toHaveProperty(
+        'productReferenceCode',
+        mockPricingPlanRequest.productReferenceCode
+      );
       expect(request.data).toHaveProperty('name', mockPricingPlanRequest.name);
       expect(request.data).toHaveProperty('price', mockPricingPlanRequest.price);
       expect(request.data).toHaveProperty('currency', mockPricingPlanRequest.currency);
-      expect(request.data).toHaveProperty('paymentInterval', mockPricingPlanRequest.paymentInterval);
-      expect(request.data).toHaveProperty('paymentIntervalCount', mockPricingPlanRequest.paymentIntervalCount);
-      expect(request.data).toHaveProperty('trialPeriodDays', mockPricingPlanRequest.trialPeriodDays);
-      expect(request.data).toHaveProperty('recurrenceCount', mockPricingPlanRequest.recurrenceCount);
+      expect(request.data).toHaveProperty(
+        'paymentInterval',
+        mockPricingPlanRequest.paymentInterval
+      );
+      expect(request.data).toHaveProperty(
+        'paymentIntervalCount',
+        mockPricingPlanRequest.paymentIntervalCount
+      );
+      expect(request.data).toHaveProperty(
+        'trialPeriodDays',
+        mockPricingPlanRequest.trialPeriodDays
+      );
+      expect(request.data).toHaveProperty(
+        'recurrenceCount',
+        mockPricingPlanRequest.recurrenceCount
+      );
     });
   });
 
@@ -364,16 +391,37 @@ describe('Iyzico Provider - Integration Tests', () => {
 
       // Verify request body
       expect(request.data).toHaveProperty('locale', 'tr');
-      expect(request.data).toHaveProperty('pricingPlanReferenceCode', mockSubscriptionInitializeRequest.pricingPlanReferenceCode);
-      expect(request.data).toHaveProperty('subscriptionInitialStatus', mockSubscriptionInitializeRequest.subscriptionInitialStatus);
+      expect(request.data).toHaveProperty(
+        'pricingPlanReferenceCode',
+        mockSubscriptionInitializeRequest.pricingPlanReferenceCode
+      );
+      expect(request.data).toHaveProperty(
+        'subscriptionInitialStatus',
+        mockSubscriptionInitializeRequest.subscriptionInitialStatus
+      );
 
       // Verify customer data
       expect(request.data).toHaveProperty('customer');
-      expect(request.data.customer).toHaveProperty('name', mockSubscriptionInitializeRequest.customer.name);
-      expect(request.data.customer).toHaveProperty('surname', mockSubscriptionInitializeRequest.customer.surname);
-      expect(request.data.customer).toHaveProperty('email', mockSubscriptionInitializeRequest.customer.email);
-      expect(request.data.customer).toHaveProperty('gsmNumber', mockSubscriptionInitializeRequest.customer.gsmNumber);
-      expect(request.data.customer).toHaveProperty('identityNumber', mockSubscriptionInitializeRequest.customer.identityNumber);
+      expect(request.data.customer).toHaveProperty(
+        'name',
+        mockSubscriptionInitializeRequest.customer.name
+      );
+      expect(request.data.customer).toHaveProperty(
+        'surname',
+        mockSubscriptionInitializeRequest.customer.surname
+      );
+      expect(request.data.customer).toHaveProperty(
+        'email',
+        mockSubscriptionInitializeRequest.customer.email
+      );
+      expect(request.data.customer).toHaveProperty(
+        'gsmNumber',
+        mockSubscriptionInitializeRequest.customer.gsmNumber
+      );
+      expect(request.data.customer).toHaveProperty(
+        'identityNumber',
+        mockSubscriptionInitializeRequest.customer.identityNumber
+      );
 
       // Verify billing address
       expect(request.data.customer).toHaveProperty('billingAddress');
@@ -384,11 +432,26 @@ describe('Iyzico Provider - Integration Tests', () => {
 
       // Verify payment card
       expect(request.data).toHaveProperty('paymentCard');
-      expect(request.data.paymentCard).toHaveProperty('cardHolderName', mockSubscriptionInitializeRequest.paymentCard.cardHolderName);
-      expect(request.data.paymentCard).toHaveProperty('cardNumber', mockSubscriptionInitializeRequest.paymentCard.cardNumber);
-      expect(request.data.paymentCard).toHaveProperty('expireMonth', mockSubscriptionInitializeRequest.paymentCard.expireMonth);
-      expect(request.data.paymentCard).toHaveProperty('expireYear', mockSubscriptionInitializeRequest.paymentCard.expireYear);
-      expect(request.data.paymentCard).toHaveProperty('cvc', mockSubscriptionInitializeRequest.paymentCard.cvc);
+      expect(request.data.paymentCard).toHaveProperty(
+        'cardHolderName',
+        mockSubscriptionInitializeRequest.paymentCard.cardHolderName
+      );
+      expect(request.data.paymentCard).toHaveProperty(
+        'cardNumber',
+        mockSubscriptionInitializeRequest.paymentCard.cardNumber
+      );
+      expect(request.data.paymentCard).toHaveProperty(
+        'expireMonth',
+        mockSubscriptionInitializeRequest.paymentCard.expireMonth
+      );
+      expect(request.data.paymentCard).toHaveProperty(
+        'expireYear',
+        mockSubscriptionInitializeRequest.paymentCard.expireYear
+      );
+      expect(request.data.paymentCard).toHaveProperty(
+        'cvc',
+        mockSubscriptionInitializeRequest.paymentCard.cvc
+      );
     });
   });
 
@@ -400,7 +463,9 @@ describe('Iyzico Provider - Integration Tests', () => {
       const request = capturedRequests[0];
 
       // Verify endpoint includes subscription reference code
-      expect(request.url).toBe(`/v2/subscription/subscriptions/${mockSubscriptionCancelRequest.subscriptionReferenceCode}/cancel`);
+      expect(request.url).toBe(
+        `/v2/subscription/subscriptions/${mockSubscriptionCancelRequest.subscriptionReferenceCode}/cancel`
+      );
     });
 
     it('should upgrade subscription with correct format', async () => {
@@ -410,12 +475,20 @@ describe('Iyzico Provider - Integration Tests', () => {
       const request = capturedRequests[0];
 
       // Verify endpoint
-      expect(request.url).toBe(`/v2/subscription/subscriptions/${mockSubscriptionUpgradeRequest.subscriptionReferenceCode}/upgrade`);
+      expect(request.url).toBe(
+        `/v2/subscription/subscriptions/${mockSubscriptionUpgradeRequest.subscriptionReferenceCode}/upgrade`
+      );
 
       // Verify request body
-      expect(request.data).toHaveProperty('newPricingPlanReferenceCode', mockSubscriptionUpgradeRequest.newPricingPlanReferenceCode);
+      expect(request.data).toHaveProperty(
+        'newPricingPlanReferenceCode',
+        mockSubscriptionUpgradeRequest.newPricingPlanReferenceCode
+      );
       expect(request.data).toHaveProperty('useTrial', mockSubscriptionUpgradeRequest.useTrial);
-      expect(request.data).toHaveProperty('resetRecurrenceCount', mockSubscriptionUpgradeRequest.resetRecurrenceCount);
+      expect(request.data).toHaveProperty(
+        'resetRecurrenceCount',
+        mockSubscriptionUpgradeRequest.resetRecurrenceCount
+      );
     });
 
     it('should retrieve subscription with correct endpoint', async () => {
@@ -425,7 +498,9 @@ describe('Iyzico Provider - Integration Tests', () => {
       const request = capturedRequests[0];
 
       // Verify endpoint
-      expect(request.url).toBe(`/v2/subscription/subscriptions/${mockSubscriptionRetrieveRequest.subscriptionReferenceCode}`);
+      expect(request.url).toBe(
+        `/v2/subscription/subscriptions/${mockSubscriptionRetrieveRequest.subscriptionReferenceCode}`
+      );
     });
 
     it('should update subscription card with correct format', async () => {
@@ -439,9 +514,18 @@ describe('Iyzico Provider - Integration Tests', () => {
 
       // Verify request body
       expect(request.data).toHaveProperty('locale', 'tr');
-      expect(request.data).toHaveProperty('subscriptionReferenceCode', mockSubscriptionCardUpdateRequest.subscriptionReferenceCode);
-      expect(request.data).toHaveProperty('callbackUrl', mockSubscriptionCardUpdateRequest.callbackUrl);
-      expect(request.data).toHaveProperty('conversationId', mockSubscriptionCardUpdateRequest.conversationId);
+      expect(request.data).toHaveProperty(
+        'subscriptionReferenceCode',
+        mockSubscriptionCardUpdateRequest.subscriptionReferenceCode
+      );
+      expect(request.data).toHaveProperty(
+        'callbackUrl',
+        mockSubscriptionCardUpdateRequest.callbackUrl
+      );
+      expect(request.data).toHaveProperty(
+        'conversationId',
+        mockSubscriptionCardUpdateRequest.conversationId
+      );
     });
   });
 
