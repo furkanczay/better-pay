@@ -187,3 +187,58 @@ export interface IyzicoBinCheckResponse extends IyzicoResponse {
   bankCode?: number;
   commercial?: number;
 }
+
+/**
+ * İyzico PWI (Payment With IBAN - Korumalı Havale/EFT) Tipleri
+ */
+
+/**
+ * PWI Ödeme Başlatma İsteği
+ */
+export interface IyzicoPWIPaymentRequest {
+  locale: string;
+  conversationId?: string;
+  price: string;
+  paidPrice: string;
+  currency: string;
+  basketId: string;
+  paymentGroup: string;
+  callbackUrl: string;
+  buyer: IyzicoBuyer;
+  shippingAddress: IyzicoAddress;
+  billingAddress: IyzicoAddress;
+  basketItems: IyzicoBasketItem[];
+}
+
+/**
+ * PWI Ödeme Başlatma Yanıtı
+ */
+export interface IyzicoPWIPaymentInitResponse extends IyzicoResponse {
+  htmlContent?: string; // Müşteriye gösterilecek HTML içeriği
+  token?: string; // PWI token
+  tokenExpireTime?: number;
+  paymentPageUrl?: string; // Ödeme sayfası URL'i
+}
+
+/**
+ * PWI Ödeme Sorgulama Yanıtı
+ */
+export interface IyzicoPWIPaymentRetrieveResponse extends IyzicoResponse {
+  token?: string;
+  callbackUrl?: string;
+  paymentStatus?: string; // WAITING, SUCCESS, FAILURE
+  paymentId?: string;
+  price?: number;
+  paidPrice?: number;
+  currency?: string;
+  basketId?: string;
+  merchantCommissionRate?: number;
+  merchantCommissionRateAmount?: number;
+  iyziCommissionRateAmount?: number;
+  iyziCommissionFee?: number;
+  iban?: string;
+  bankName?: string;
+  buyerName?: string;
+  buyerSurname?: string;
+  buyerEmail?: string;
+}

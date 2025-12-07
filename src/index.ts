@@ -35,6 +35,10 @@ export {
   CheckoutFormRequest,
   CheckoutFormInitResponse,
   CheckoutFormRetrieveResponse,
+  PWIPaymentRequest,
+  PWIPaymentInitResponse,
+  PWIPaymentRetrieveResponse,
+  PWIPaymentStatus,
 } from './types';
 
 // Provider exports (for advanced usage - direct provider access)

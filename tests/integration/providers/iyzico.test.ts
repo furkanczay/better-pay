@@ -556,4 +556,214 @@ describe('Iyzico Provider - Integration Tests', () => {
       expect(request.data).toHaveProperty('conversationId');
     });
   });
+
+  describe('PWI (Payment With IBAN - Korumalı Havale/EFT)', () => {
+    beforeEach(() => {
+      const client = (iyzico as any).client;
+      vi.spyOn(client, 'post').mockImplementation(async (...args: unknown[]) => {
+        const [url, data, config] = args as [string, any, any];
+
+        capturedRequests.push({
+          url,
+          data: typeof data === 'string' ? JSON.parse(data) : data,
+          headers: config?.headers || {},
+          rawData: data,
+        });
+
+        if (url.includes('/payment/iyzipos/item/initialize')) {
+          return {
+            data: {
+              status: 'success',
+              locale: 'tr',
+              systemTime: Date.now(),
+              conversationId: 'test-conversation-id',
+              htmlContent: '<html>PWI payment page</html>',
+              token: 'pwi-token-123',
+              tokenExpireTime: Date.now() + 3600000,
+              paymentPageUrl: 'https://sandbox-api.iyzipay.com/payment/pwi/test-token',
+            },
+            status: 200,
+          };
+        } else if (url.includes('/payment/iyzipos/item/detail')) {
+          return {
+            data: {
+              status: 'success',
+              locale: 'tr',
+              systemTime: Date.now(),
+              conversationId: 'test-conversation-id',
+              token: 'pwi-token-123',
+              callbackUrl: 'https://your-site.com/payment/callback',
+              paymentStatus: 'WAITING',
+              iban: 'TR123456789012345678901234',
+              bankName: 'Test Bank',
+              buyerName: 'John',
+              buyerSurname: 'Doe',
+              buyerEmail: 'john.doe@example.com',
+              price: 100.0,
+              paidPrice: 100.0,
+              currency: 'TRY',
+              basketId: 'B67832',
+            },
+            status: 200,
+          };
+        }
+
+        return {
+          data: {
+            status: 'success',
+            paymentId: 'test-payment-id',
+            conversationId: 'test-conversation-id',
+          },
+          status: 200,
+        };
+      });
+    });
+
+    it('should initialize PWI payment with correct format', async () => {
+      const pwiRequest = {
+        price: '100.00',
+        paidPrice: '100.00',
+        currency: 'TRY',
+        basketId: 'B67832',
+        callbackUrl: 'https://your-site.com/payment/callback',
+        buyer: mockPaymentRequest.buyer,
+        shippingAddress: mockPaymentRequest.shippingAddress,
+        billingAddress: mockPaymentRequest.billingAddress,
+        basketItems: mockPaymentRequest.basketItems,
+        conversationId: 'test-pwi-conversation',
+      };
+
+      await iyzico.initPWIPayment(pwiRequest);
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe('/payment/iyzipos/item/initialize');
+
+      // Verify request body
+      expect(request.data).toHaveProperty('locale', 'tr');
+      expect(request.data).toHaveProperty('conversationId', 'test-pwi-conversation');
+      expect(request.data).toHaveProperty('price', '100.00');
+      expect(request.data).toHaveProperty('paidPrice', '100.00');
+      expect(request.data).toHaveProperty('currency', 'TRY');
+      expect(request.data).toHaveProperty('basketId', 'B67832');
+      expect(request.data).toHaveProperty('paymentGroup', 'PRODUCT');
+      expect(request.data).toHaveProperty('callbackUrl', 'https://your-site.com/payment/callback');
+
+      // Verify buyer data
+      expect(request.data).toHaveProperty('buyer');
+      expect(request.data.buyer).toHaveProperty('id', mockPaymentRequest.buyer.id);
+      expect(request.data.buyer).toHaveProperty('name', mockPaymentRequest.buyer.name);
+      expect(request.data.buyer).toHaveProperty('email', mockPaymentRequest.buyer.email);
+
+      // Verify basket items
+      expect(request.data).toHaveProperty('basketItems');
+      expect(request.data.basketItems).toHaveLength(mockPaymentRequest.basketItems.length);
+    });
+
+    it('should retrieve PWI payment status with correct format', async () => {
+      await iyzico.retrievePWIPayment('pwi-token-123', 'test-conversation-id');
+
+      expect(capturedRequests).toHaveLength(1);
+      const request = capturedRequests[0];
+
+      // Verify endpoint
+      expect(request.url).toBe('/payment/iyzipos/item/detail');
+
+      // Verify request body
+      expect(request.data).toHaveProperty('locale', 'tr');
+      expect(request.data).toHaveProperty('conversationId', 'test-conversation-id');
+      expect(request.data).toHaveProperty('token', 'pwi-token-123');
+    });
+
+    it('should include authorization header in PWI requests', async () => {
+      const pwiRequest = {
+        price: '100.00',
+        paidPrice: '100.00',
+        currency: 'TRY',
+        basketId: 'B67832',
+        callbackUrl: 'https://your-site.com/payment/callback',
+        buyer: mockPaymentRequest.buyer,
+        shippingAddress: mockPaymentRequest.shippingAddress,
+        billingAddress: mockPaymentRequest.billingAddress,
+        basketItems: mockPaymentRequest.basketItems,
+      };
+
+      await iyzico.initPWIPayment(pwiRequest);
+
+      const request = capturedRequests[0];
+
+      // Should have IYZWSv2 authorization
+      expect(request.headers.Authorization).toBeDefined();
+      expect(request.headers.Authorization).toMatch(/^IYZWSv2 /);
+      expect(request.headers['x-iyzi-rnd']).toBeDefined();
+    });
+
+    it('should handle PWI payment with all required fields', async () => {
+      const pwiRequest = {
+        price: '250.50',
+        paidPrice: '250.50',
+        currency: 'TRY',
+        basketId: 'B12345',
+        callbackUrl: 'https://example.com/callback',
+        buyer: {
+          id: 'BY123',
+          name: 'Jane',
+          surname: 'Smith',
+          email: 'jane@example.com',
+          identityNumber: '11111111111',
+          registrationAddress: '123 Main St',
+          city: 'Ankara',
+          country: 'Turkey',
+          ip: '192.168.1.1',
+          gsmNumber: '+905551234567',
+        },
+        shippingAddress: {
+          contactName: 'Jane Smith',
+          city: 'Ankara',
+          country: 'Turkey',
+          address: '123 Main St',
+          zipCode: '06000',
+        },
+        billingAddress: {
+          contactName: 'Jane Smith',
+          city: 'Ankara',
+          country: 'Turkey',
+          address: '123 Main St',
+          zipCode: '06000',
+        },
+        basketItems: [
+          {
+            id: 'BI1',
+            name: 'Item 1',
+            category1: 'Electronics',
+            itemType: 'PHYSICAL',
+            price: '250.50',
+          },
+        ],
+        conversationId: 'pwi-conv-123',
+      };
+
+      const result = await iyzico.initPWIPayment(pwiRequest);
+
+      expect(result.status).toBe('success');
+      expect(result.htmlContent).toBeDefined();
+      expect(result.token).toBe('pwi-token-123');
+      expect(result.paymentPageUrl).toBeDefined();
+      expect(result.tokenExpireTime).toBeGreaterThan(Date.now());
+    });
+
+    it('should retrieve PWI payment with IBAN details', async () => {
+      const result = await iyzico.retrievePWIPayment('pwi-token-123');
+
+      expect(result.status).toBe('success');
+      expect(result.paymentStatus).toBe('WAITING');
+      expect(result.iban).toBe('TR123456789012345678901234');
+      expect(result.bankName).toBe('Test Bank');
+      expect(result.buyerName).toBe('John');
+      expect(result.buyerSurname).toBe('Doe');
+      expect(result.buyerEmail).toBe('john.doe@example.com');
+    });
+  });
 });

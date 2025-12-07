@@ -178,6 +178,81 @@ if (threeDSResult.status === 'success' && threeDSResult.threeDSHtmlContent) {
 const finalResult = await betterPay.iyzico.completeThreeDSPayment(callbackData);
 ```
 
+### Korumalı Havale/EFT (PWI - Payment With IBAN)
+
+İyzico'nun korumalı havale sistemi ile kullanıcılarınız havale/EFT ile ödeme yapabilir. Havale yapıldığında ödeme onaylanır ve satıcıya aktarılır:
+
+```typescript
+import { BetterPay, Currency, BasketItemType } from 'better-payment';
+
+// PWI Ödeme başlat
+const pwiResult = await betterPay.iyzico.initPWIPayment({
+  price: '100.00',
+  paidPrice: '100.00',
+  currency: Currency.TRY,
+  basketId: 'B67832',
+  callbackUrl: 'https://your-site.com/payment/callback',
+  buyer: {
+    id: 'BY789',
+    name: 'John',
+    surname: 'Doe',
+    email: 'email@email.com',
+    identityNumber: '11111111110',
+    registrationAddress: 'Address',
+    city: 'Istanbul',
+    country: 'Turkey',
+    ip: '85.34.78.112',
+    gsmNumber: '+905350000000',
+  },
+  shippingAddress: {
+    contactName: 'John Doe',
+    city: 'Istanbul',
+    country: 'Turkey',
+    address: 'Address',
+  },
+  billingAddress: {
+    contactName: 'John Doe',
+    city: 'Istanbul',
+    country: 'Turkey',
+    address: 'Address',
+  },
+  basketItems: [
+    {
+      id: 'BI101',
+      name: 'Product 1',
+      category1: 'Category',
+      itemType: BasketItemType.PHYSICAL,
+      price: '100.00',
+    },
+  ],
+});
+
+if (pwiResult.status === 'success') {
+  // Option 1: HTML içeriğini göster (IBAN ve havale bilgileri)
+  document.getElementById('payment-info').innerHTML = pwiResult.htmlContent;
+
+  // Option 2: İyzico ödeme sayfasına yönlendir
+  window.location.href = pwiResult.paymentPageUrl;
+
+  // Token'ı sakla (ödeme durumu sorgulamak için)
+  const token = pwiResult.token;
+}
+
+// PWI Ödeme durumunu sorgula
+const paymentStatus = await betterPay.iyzico.retrievePWIPayment(token);
+
+if (paymentStatus.status === 'success') {
+  if (paymentStatus.paymentStatus === 'SUCCESS') {
+    console.log('Havale başarıyla alındı:', paymentStatus.paymentId);
+    console.log('Ödenen tutar:', paymentStatus.paidPrice);
+  } else if (paymentStatus.paymentStatus === 'WAITING') {
+    console.log('Havale bekleniyor');
+    console.log('IBAN:', paymentStatus.iban);
+    console.log('Banka:', paymentStatus.bankName);
+  }
+}
+```
+
 ### Checkout Form (Ödeme Formu)
 
 İyzico'nun hazır ödeme formunu kullanarak, kart bilgilerini kendi sunucunuzda tutmadan ödeme alabilirsiniz:
@@ -483,6 +558,11 @@ Tüm provider'lar aşağıdaki metodları uygular:
 
 İyzico provider'ı aşağıdaki ek metodları sunar:
 
+**PWI (Payment With IBAN - Korumalı Havale/EFT):**
+
+- `initPWIPayment(request)` - Korumalı havale/EFT ödeme başlat
+- `retrievePWIPayment(token, conversationId?)` - PWI ödeme durumunu sorgula
+
 **Checkout Form:**
 
 - `initCheckoutForm(request)` - Checkout form başlat (kart bilgileri toplamadan ödeme)
@@ -497,6 +577,10 @@ Tüm provider'lar aşağıdaki metodları uygular:
 - `upgradeSubscription(request)` - Aboneliği farklı plana yükselt
 - `updateSubscriptionCard(request)` - Abonelik kartını güncelle
 - `cancelSubscription(request)` - Aboneliği iptal et
+
+**BIN Sorgulama:**
+
+- `binCheck(binNumber)` - Kart BIN numarası sorgulama
 
 ### Tipler ve Enum'lar
 
@@ -706,6 +790,7 @@ MIT
   - [x] Non3D Ödeme
   - [x] 3D Secure Ödeme
   - [x] Checkout Form
+  - [x] PWI (Korumalı Havale/EFT)
   - [x] Abonelik (Subscription) Desteği
   - [x] İade ve İptal
   - [x] Ödeme Sorgulama

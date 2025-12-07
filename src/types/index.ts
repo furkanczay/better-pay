@@ -251,5 +251,73 @@ export interface CheckoutFormRetrieveResponse {
   rawResponse?: any;
 }
 
+/**
+ * PWI (Payment With IBAN - Korumalı Havale/EFT) İsteği
+ */
+export interface PWIPaymentRequest {
+  price: string;
+  paidPrice: string;
+  currency: Currency | string;
+  basketId: string;
+  callbackUrl: string;
+  buyer: Buyer;
+  shippingAddress: Address;
+  billingAddress: Address;
+  basketItems: BasketItem[];
+  conversationId?: string;
+}
+
+/**
+ * PWI Ödeme Başlatma Yanıtı
+ */
+export interface PWIPaymentInitResponse {
+  status: PaymentStatus;
+  htmlContent?: string; // Müşteriye gösterilecek HTML içeriği
+  token?: string;
+  tokenExpireTime?: number;
+  paymentPageUrl?: string; // Ödeme sayfası URL'i
+  conversationId?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  rawResponse?: any;
+}
+
+/**
+ * PWI Ödeme Durumu
+ */
+export enum PWIPaymentStatus {
+  WAITING = 'WAITING', // Havale bekleniyor
+  SUCCESS = 'SUCCESS', // Havale başarılı
+  FAILURE = 'FAILURE', // Havale başarısız/iptal edildi
+}
+
+/**
+ * PWI Ödeme Sorgulama Yanıtı
+ */
+export interface PWIPaymentRetrieveResponse {
+  status: PaymentStatus;
+  token?: string;
+  callbackUrl?: string;
+  paymentStatus?: PWIPaymentStatus | string;
+  paymentId?: string;
+  price?: number;
+  paidPrice?: number;
+  currency?: string;
+  basketId?: string;
+  merchantCommissionRate?: number;
+  merchantCommissionRateAmount?: number;
+  iyziCommissionRateAmount?: number;
+  iyziCommissionFee?: number;
+  iban?: string; // Havale yapılacak IBAN
+  bankName?: string; // Banka adı
+  buyerName?: string;
+  buyerSurname?: string;
+  buyerEmail?: string;
+  conversationId?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  rawResponse?: any;
+}
+
 // Export subscription types
 export * from './subscription';

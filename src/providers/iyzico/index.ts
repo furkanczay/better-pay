@@ -14,6 +14,9 @@ import {
   CheckoutFormInitResponse,
   CheckoutFormRetrieveResponse,
   BinCheckResponse,
+  PWIPaymentRequest,
+  PWIPaymentInitResponse,
+  PWIPaymentRetrieveResponse,
 } from '../../types';
 import { createIyzicoHeaders } from './utils';
 import {
@@ -27,6 +30,9 @@ import {
   IyzicoCheckoutFormRetrieveResponse,
   IyzicoBinCheckRequest,
   IyzicoBinCheckResponse,
+  IyzicoPWIPaymentRequest,
+  IyzicoPWIPaymentInitResponse,
+  IyzicoPWIPaymentRetrieveResponse,
 } from './types';
 
 /**
@@ -718,5 +724,195 @@ export class Iyzico extends PaymentProvider {
       commercial: response.commercial === 1,
       rawResponse: response,
     };
+  }
+
+  /**
+   * ===================
+   * PWI (Payment With IBAN - Korumalı Havale/EFT) METHODS
+   * ===================
+   */
+
+  /**
+   * PWI request'ini İyzico formatına çevir
+   */
+  private mapToPWIRequest(request: PWIPaymentRequest): IyzicoPWIPaymentRequest {
+    return {
+      locale: this.config.locale || 'tr',
+      conversationId: request.conversationId,
+      price: request.price,
+      paidPrice: request.paidPrice,
+      currency: request.currency,
+      basketId: request.basketId,
+      paymentGroup: 'PRODUCT',
+      callbackUrl: request.callbackUrl,
+      buyer: {
+        id: request.buyer.id,
+        name: request.buyer.name,
+        surname: request.buyer.surname,
+        gsmNumber: request.buyer.gsmNumber,
+        email: request.buyer.email,
+        identityNumber: request.buyer.identityNumber,
+        registrationAddress: request.buyer.registrationAddress,
+        ip: request.buyer.ip,
+        city: request.buyer.city,
+        country: request.buyer.country,
+        zipCode: request.buyer.zipCode,
+      },
+      shippingAddress: {
+        contactName: request.shippingAddress.contactName,
+        city: request.shippingAddress.city,
+        country: request.shippingAddress.country,
+        address: request.shippingAddress.address,
+        zipCode: request.shippingAddress.zipCode,
+      },
+      billingAddress: {
+        contactName: request.billingAddress.contactName,
+        city: request.billingAddress.city,
+        country: request.billingAddress.country,
+        address: request.billingAddress.address,
+        zipCode: request.billingAddress.zipCode,
+      },
+      basketItems: request.basketItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        category1: item.category1,
+        category2: item.category2,
+        itemType: item.itemType,
+        price: item.price,
+      })),
+    };
+  }
+
+  /**
+   * PWI Ödeme Başlat
+   *
+   * Korumalı havale/EFT ile ödeme başlatır. Kullanıcıya IBAN numarası ve ödeme bilgileri gösterilir.
+   * Kullanıcı havale yaptıktan sonra, ödeme onaylandığında satıcıya aktarılır.
+   *
+   * @param request - PWI ödeme isteği parametreleri
+   * @returns PWI ödeme başlatma yanıtı (HTML içeriği, token, ödeme sayfası URL'i)
+   *
+   * @example
+   * ```typescript
+   * const result = await iyzico.initPWIPayment({
+   *   price: '100.00',
+   *   paidPrice: '100.00',
+   *   currency: Currency.TRY,
+   *   basketId: 'B67832',
+   *   callbackUrl: 'https://your-site.com/payment/callback',
+   *   buyer: { ... },
+   *   shippingAddress: { ... },
+   *   billingAddress: { ... },
+   *   basketItems: [ ... ]
+   * });
+   *
+   * if (result.status === 'success') {
+   *   // Option 1: HTML içeriğini göster
+   *   document.body.innerHTML = result.htmlContent;
+   *
+   *   // Option 2: Ödeme sayfasına yönlendir
+   *   window.location.href = result.paymentPageUrl;
+   * }
+   * ```
+   */
+  async initPWIPayment(request: PWIPaymentRequest): Promise<PWIPaymentInitResponse> {
+    try {
+      const iyzicoRequest = this.mapToPWIRequest(request);
+
+      const response = await this.sendRequest<IyzicoPWIPaymentInitResponse>(
+        '/payment/iyzipos/item/initialize',
+        iyzicoRequest
+      );
+
+      return {
+        status: this.mapStatus(response.status),
+        htmlContent: response.htmlContent,
+        token: response.token,
+        tokenExpireTime: response.tokenExpireTime,
+        paymentPageUrl: response.paymentPageUrl,
+        conversationId: response.conversationId,
+        errorCode: response.errorCode,
+        errorMessage: response.errorMessage,
+        rawResponse: response,
+      };
+    } catch (error: any) {
+      return {
+        status: PaymentStatus.FAILURE,
+        errorMessage: error.message || 'PWI payment initialization failed',
+        rawResponse: error.response?.data,
+      };
+    }
+  }
+
+  /**
+   * PWI Ödeme Sorgula
+   *
+   * Başlatılmış PWI ödemesinin durumunu sorgular.
+   * Havale yapıldıysa ödeme bilgilerini, yapılmadıysa IBAN ve banka bilgilerini döndürür.
+   *
+   * @param token - PWI ödeme token'ı (initPWIPayment metodundan döner)
+   * @param conversationId - Opsiyonel conversation ID
+   * @returns PWI ödeme durumu ve detayları
+   *
+   * @example
+   * ```typescript
+   * const result = await iyzico.retrievePWIPayment(token);
+   *
+   * if (result.status === 'success') {
+   *   if (result.paymentStatus === 'SUCCESS') {
+   *     console.log('Ödeme başarılı:', result.paymentId);
+   *   } else if (result.paymentStatus === 'WAITING') {
+   *     console.log('Havale bekleniyor');
+   *     console.log('IBAN:', result.iban);
+   *     console.log('Banka:', result.bankName);
+   *   }
+   * }
+   * ```
+   */
+  async retrievePWIPayment(
+    token: string,
+    conversationId?: string
+  ): Promise<PWIPaymentRetrieveResponse> {
+    try {
+      const response = await this.sendRequest<IyzicoPWIPaymentRetrieveResponse>(
+        '/payment/iyzipos/item/detail',
+        {
+          locale: this.config.locale || 'tr',
+          conversationId: conversationId,
+          token: token,
+        }
+      );
+
+      return {
+        status: this.mapStatus(response.status),
+        token: response.token,
+        callbackUrl: response.callbackUrl,
+        paymentStatus: response.paymentStatus,
+        paymentId: response.paymentId,
+        price: response.price,
+        paidPrice: response.paidPrice,
+        currency: response.currency,
+        basketId: response.basketId,
+        merchantCommissionRate: response.merchantCommissionRate,
+        merchantCommissionRateAmount: response.merchantCommissionRateAmount,
+        iyziCommissionRateAmount: response.iyziCommissionRateAmount,
+        iyziCommissionFee: response.iyziCommissionFee,
+        iban: response.iban,
+        bankName: response.bankName,
+        buyerName: response.buyerName,
+        buyerSurname: response.buyerSurname,
+        buyerEmail: response.buyerEmail,
+        conversationId: response.conversationId,
+        errorCode: response.errorCode,
+        errorMessage: response.errorMessage,
+        rawResponse: response,
+      };
+    } catch (error: any) {
+      return {
+        status: PaymentStatus.FAILURE,
+        errorMessage: error.message || 'PWI payment retrieve failed',
+        rawResponse: error.response?.data,
+      };
+    }
   }
 }
