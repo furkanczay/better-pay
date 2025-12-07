@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/furkanczay/better-payment/compare/v2.1.0...v2.2.0) (2025-12-07)
+
+
+### 🐛 Bug Fixes
+
+* Build error ([30f6408](https://github.com/furkanczay/better-payment/commit/30f6408c277bb7b517f1fc180580c186031c7d18))
+* **tsconfig:** exclude examples directory from TypeScript compilation ([83b0d1c](https://github.com/furkanczay/better-payment/commit/83b0d1cd85a172f11e3e0de06850f363dba4d2ef))
+
+
+### ✨ Features
+
+* **iyzico:** add installment inquiry support ([ef6cb00](https://github.com/furkanczay/better-payment/commit/ef6cb00abbe3d5b0b60eaafc22e1235c56ded433))
+* **iyzico:** implement PWI (Payment With IBAN) functionality with comprehensive examples and tests ([8d7e82d](https://github.com/furkanczay/better-payment/commit/8d7e82d841cc1ec2b867f6617dd88b8c407e0098))
+
 ## [2.1.0](https://github.com/furkanczay/better-payment/compare/v2.0.0...v2.1.0) (2025-11-22)
 
 
