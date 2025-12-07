@@ -39,6 +39,10 @@ export {
   PWIPaymentInitResponse,
   PWIPaymentRetrieveResponse,
   PWIPaymentStatus,
+  InstallmentInfoRequest,
+  InstallmentInfoResponse,
+  InstallmentDetail,
+  InstallmentPrice,
 } from './types';
 
 // Provider exports (for advanced usage - direct provider access)

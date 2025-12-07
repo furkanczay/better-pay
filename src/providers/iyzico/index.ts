@@ -17,6 +17,8 @@ import {
   PWIPaymentRequest,
   PWIPaymentInitResponse,
   PWIPaymentRetrieveResponse,
+  InstallmentInfoRequest,
+  InstallmentInfoResponse,
 } from '../../types';
 import { createIyzicoHeaders } from './utils';
 import {
@@ -33,6 +35,8 @@ import {
   IyzicoPWIPaymentRequest,
   IyzicoPWIPaymentInitResponse,
   IyzicoPWIPaymentRetrieveResponse,
+  IyzicoInstallmentInfoRequest,
+  IyzicoInstallmentInfoResponse,
 } from './types';
 
 /**
@@ -911,6 +915,70 @@ export class Iyzico extends PaymentProvider {
       return {
         status: PaymentStatus.FAILURE,
         errorMessage: error.message || 'PWI payment retrieve failed',
+        rawResponse: error.response?.data,
+      };
+    }
+  }
+
+  /**
+   * ===================
+   * INSTALLMENT (Taksit) METHODS
+   * ===================
+   */
+
+  /**
+   * Taksit Sorgulama
+   *
+   * Belirli bir BIN numarası ve tutar için kullanılabilir taksit seçeneklerini sorgular.
+   * Her banka için farklı taksit oranlarını ve toplam tutarları gösterir.
+   *
+   * @param request - Taksit sorgulama isteği (BIN numarası ve tutar)
+   * @returns Taksit seçenekleri ve detayları
+   *
+   * @example
+   * ```typescript
+   * const result = await iyzico.installmentInfo({
+   *   binNumber: '552879',
+   *   price: '100.00'
+   * });
+   *
+   * if (result.status === 'success' && result.installmentDetails) {
+   *   result.installmentDetails.forEach(detail => {
+   *     console.log(`Banka: ${detail.bankName}`);
+   *     console.log(`Kart Ailesi: ${detail.cardFamilyName}`);
+   *     detail.installmentPrices.forEach(installment => {
+   *       console.log(`${installment.installmentNumber} taksit: ${installment.totalPrice} TL (Taksit başına: ${installment.installmentPrice} TL)`);
+   *     });
+   *   });
+   * }
+   * ```
+   */
+  async installmentInfo(request: InstallmentInfoRequest): Promise<InstallmentInfoResponse> {
+    try {
+      const iyzicoRequest: IyzicoInstallmentInfoRequest = {
+        locale: this.config.locale || 'tr',
+        conversationId: request.conversationId,
+        binNumber: request.binNumber,
+        price: request.price,
+      };
+
+      const response = await this.sendRequest<IyzicoInstallmentInfoResponse>(
+        '/payment/iyzipos/installment',
+        iyzicoRequest
+      );
+
+      return {
+        status: this.mapStatus(response.status),
+        installmentDetails: response.installmentDetails,
+        conversationId: response.conversationId,
+        errorCode: response.errorCode,
+        errorMessage: response.errorMessage,
+        rawResponse: response,
+      };
+    } catch (error: any) {
+      return {
+        status: PaymentStatus.FAILURE,
+        errorMessage: error.message || 'Installment info request failed',
         rawResponse: error.response?.data,
       };
     }

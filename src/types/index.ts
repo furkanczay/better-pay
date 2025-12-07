@@ -319,5 +319,52 @@ export interface PWIPaymentRetrieveResponse {
   rawResponse?: any;
 }
 
+/**
+ * Taksit Detay Bilgisi
+ */
+export interface InstallmentDetail {
+  installmentNumber: number; // Taksit sayısı (1 = tek çekim)
+  totalPrice: number; // Toplam tutar
+  installmentPrice: number; // Taksit başına tutar
+}
+
+/**
+ * Taksit Bilgisi (Banka Bazında)
+ */
+export interface InstallmentPrice {
+  binNumber: string; // Kart BIN numarası
+  price: number; // Fiyat
+  cardType: string; // Kart tipi (CREDIT_CARD, DEBIT_CARD)
+  cardAssociation: string; // Kart kuruluşu (VISA, MASTER_CARD, TROY, AMEX)
+  cardFamilyName: string; // Kart ailesi adı (Bonus, Maximum, Axess, World, vb.)
+  force3ds?: number; // 3DS zorunluluğu (0: hayır, 1: evet)
+  bankCode: number; // Banka kodu
+  bankName: string; // Banka adı
+  forceCvc?: number; // CVC zorunluluğu (0: hayır, 1: evet)
+  commercial: number; // Ticari kart mı (0: hayır, 1: evet)
+  installmentPrices: InstallmentDetail[]; // Taksit detayları
+}
+
+/**
+ * Taksit Sorgulama İsteği
+ */
+export interface InstallmentInfoRequest {
+  binNumber: string; // Kredi kartı BIN numarası (ilk 6-8 hane)
+  price: string; // Ödeme tutarı
+  conversationId?: string; // İsteğe bağlı conversation ID
+}
+
+/**
+ * Taksit Sorgulama Yanıtı
+ */
+export interface InstallmentInfoResponse {
+  status: PaymentStatus;
+  installmentDetails?: InstallmentPrice[]; // Taksit detayları
+  conversationId?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  rawResponse?: any;
+}
+
 // Export subscription types
 export * from './subscription';

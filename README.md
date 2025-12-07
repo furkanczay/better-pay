@@ -17,7 +17,7 @@ Türkiye'deki tüm ödeme altyapılarını entegre edebilen unified payment gate
 
 ## Desteklenen Ödeme Sağlayıcıları
 
-- ✅ **İyzico** - Tam destek (V2 Authorization, Checkout Form, Subscription)
+- ✅ **İyzico** - Tam destek (V2 Authorization, Checkout Form, Subscription, Installment Inquiry)
 - ✅ **PayTR** - Tam destek
 - 🔜 **ParamPOS** - Planlanan
 
@@ -427,6 +427,57 @@ const cancel = await betterPay.iyzico.cancelSubscription({
 - `SubscriptionStatus.EXPIRED` - Süresi Doldu
 - `SubscriptionStatus.UNPAID` - Ödenmedi
 
+### Taksit Sorgulama
+
+Kullanıcının kartına ait BIN numarasına göre kullanılabilir taksit seçeneklerini sorgulayabilirsiniz:
+
+```typescript
+import { BetterPay } from 'better-payment';
+
+// Kart BIN numarası ile taksit seçeneklerini sorgula
+const installmentResult = await betterPay.iyzico.installmentInfo({
+  binNumber: '552879', // Kart numarasının ilk 6-8 hanesi
+  price: '100.00',
+  conversationId: 'optional-conversation-id',
+});
+
+if (installmentResult.status === 'success' && installmentResult.installmentDetails) {
+  installmentResult.installmentDetails.forEach((detail) => {
+    console.log(`Banka: ${detail.bankName}`);
+    console.log(`Kart Ailesi: ${detail.cardFamilyName}`);
+    console.log(`Kart Tipi: ${detail.cardType}`);
+    console.log(`Kart Kuruluşu: ${detail.cardAssociation}`);
+
+    // Taksit seçenekleri
+    detail.installmentPrices.forEach((installment) => {
+      if (installment.installmentNumber === 1) {
+        console.log(`Tek Çekim: ${installment.totalPrice} TL`);
+      } else {
+        console.log(
+          `${installment.installmentNumber} Taksit: ${installment.totalPrice} TL ` +
+          `(Aylık: ${installment.installmentPrice} TL)`
+        );
+      }
+    });
+  });
+}
+```
+
+**Taksit Bilgileri:**
+- `binNumber` - Kart BIN numarası
+- `bankName` - Banka adı
+- `cardFamilyName` - Kart ailesi (Bonus, Maximum, Axess, World, vb.)
+- `cardType` - Kart tipi (CREDIT_CARD, DEBIT_CARD)
+- `cardAssociation` - Kart kuruluşu (VISA, MASTER_CARD, TROY, AMEX)
+- `commercial` - Ticari kart mı (0: hayır, 1: evet)
+- `force3ds` - 3DS zorunlu mu (0: hayır, 1: evet)
+- `installmentPrices` - Taksit seçenekleri listesi
+
+**Kullanım Senaryoları:**
+- E-Ticaret checkout sayfasında kullanıcıya taksit seçeneklerini gösterme
+- Farklı kartlar için taksit oranlarını karşılaştırma
+- Kart girişi sırasında gerçek zamanlı taksit bilgisi gösterme
+
 ### Diğer İşlemler
 
 ```typescript
@@ -581,6 +632,10 @@ Tüm provider'lar aşağıdaki metodları uygular:
 **BIN Sorgulama:**
 
 - `binCheck(binNumber)` - Kart BIN numarası sorgulama
+
+**Taksit Sorgulama:**
+
+- `installmentInfo(request)` - Kart BIN numarası ve tutara göre taksit seçeneklerini sorgula
 
 ### Tipler ve Enum'lar
 
@@ -796,6 +851,7 @@ MIT
   - [x] Ödeme Sorgulama
   - [x] TypeScript Desteği
   - [x] BIN Check
+  - [x] Taksit Sorgulama
 - [x] PayTR entegrasyonu
   - [x] Non3D Ödeme
   - [x] 3D Secure Ödeme

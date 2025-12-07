@@ -242,3 +242,46 @@ export interface IyzicoPWIPaymentRetrieveResponse extends IyzicoResponse {
   buyerSurname?: string;
   buyerEmail?: string;
 }
+
+/**
+ * İyzico Taksit Detay Bilgisi
+ */
+export interface IyzicoInstallmentDetail {
+  installmentNumber: number;
+  totalPrice: number;
+  installmentPrice: number;
+}
+
+/**
+ * İyzico Taksit Fiyat Bilgisi
+ */
+export interface IyzicoInstallmentPrice {
+  binNumber: string;
+  price: number;
+  cardType: string;
+  cardAssociation: string;
+  cardFamilyName: string;
+  force3ds?: number;
+  bankCode: number;
+  bankName: string;
+  forceCvc?: number;
+  commercial: number;
+  installmentPrices: IyzicoInstallmentDetail[];
+}
+
+/**
+ * İyzico Taksit Sorgulama İsteği
+ */
+export interface IyzicoInstallmentInfoRequest {
+  locale?: string;
+  conversationId?: string;
+  binNumber: string;
+  price: string;
+}
+
+/**
+ * İyzico Taksit Sorgulama Yanıtı
+ */
+export interface IyzicoInstallmentInfoResponse extends IyzicoResponse {
+  installmentDetails?: IyzicoInstallmentPrice[];
+}
